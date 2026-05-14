@@ -1,27 +1,31 @@
-# Stage 1: Builder
 FROM node:20-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod
 
 COPY tsconfig.json ./
 COPY src/ ./src/
-RUN npx tsc
+RUN pnpm exec tsc
 
-# Stage 2: Runner
 FROM node:20-alpine AS runner
 
 RUN addgroup -S vaultlock && adduser -S vaultlock -G vaultlock
 
 WORKDIR /app
 
-RUN mkdir -p /data/db /data/certs && chown -R vaultlock:vaultlock /data
+RUN mkdir -p /data && chown -R vaultlock:vaultlock /data
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY package.json ./
+
+ENV NODE_ENV=production
+ENV PORT=3443
+ENV DB_PATH=/data/vaultlock.db
 
 EXPOSE 3443
 
