@@ -100,7 +100,7 @@ process.on('SIGTERM', () => {
   logger.info('Shutting down...');
   closeDb();
   process.exit(0);
-}
+});
 
 start();
 
