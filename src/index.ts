@@ -6,11 +6,14 @@ import { config } from './utils/config';
 import { logger } from './utils/logger';
 import { initDb, getDb, closeDb } from './db/db';
 import { errorHandler } from './api/middleware/error.middleware';
+import { authenticate, AuthRequest } from './api/middleware/auth.middleware';
+import { rateLimitDefault } from './api/middleware/rateLimit.middleware';
 import { authRouter } from './api/routes/auth.routes';
 import { vaultRouter } from './api/routes/vault.routes';
 import { entriesRouter } from './api/routes/entries.routes';
 import { foldersRouter } from './api/routes/folders.routes';
 import { settingsRouter } from './api/routes/settings.routes';
+import { getAuditLogs } from './services/audit.service';
 import { ApiResponse } from './types';
 
 const app = express();
@@ -77,6 +80,18 @@ app.use('/api/vault', vaultRouter);
 app.use('/api/entries', entriesRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/settings', settingsRouter);
+
+app.get(
+  '/api/audit',
+  authenticate,
+  rateLimitDefault,
+  (req: AuthRequest, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(parseInt(req.query.limit as string) || 50, 1000);
+    const result = getAuditLogs(req.userId!, page, limit);
+    res.json({ success: true, data: result });
+  },
+);
 
 app.use(errorHandler);
 

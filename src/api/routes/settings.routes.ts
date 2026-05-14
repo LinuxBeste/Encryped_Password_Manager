@@ -4,16 +4,10 @@ import { validate } from '../middleware/validate.middleware';
 import { rateLimitDefault } from '../middleware/rateLimit.middleware';
 import { authenticate, AuthRequest } from '../middleware/auth.middleware';
 import { getDb } from '../../db/db';
-import { getAuditLogs } from '../../services/audit.service';
 
 const router = Router();
 
 const updateSettingsSchema = z.record(z.string(), z.string());
-
-const auditQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().positive().max(1000).optional().default(50),
-});
 
 router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const db = getDb();
@@ -47,18 +41,6 @@ router.put(
     })();
 
     res.json({ success: true });
-  },
-);
-
-router.get(
-  '/audit',
-  authenticate,
-  rateLimitDefault,
-  validate(auditQuerySchema, 'query'),
-  (req: AuthRequest, res: Response) => {
-    const { page, limit } = req.query as any;
-    const result = getAuditLogs(req.userId!, page, limit);
-    res.json({ success: true, data: result });
   },
 );
 

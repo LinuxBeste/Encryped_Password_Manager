@@ -24,9 +24,10 @@ export async function registerUser(email: string, masterPassword: string): Promi
   ).run(userId, email, argon2Hash, now);
 
   const vaultId = uuidv4();
+  const emptyBuf = Buffer.alloc(0);
   db.prepare(
-    'INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, x'', x'', x'', 1, ?)',
-  ).run(vaultId, userId, 'default', now);
+    "INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
+  ).run(vaultId, userId, 'default', emptyBuf, emptyBuf, emptyBuf, now);
 
   logger.info(`User registered: ${email}`);
   return { success: true, data: { userId } };
@@ -151,7 +152,7 @@ export async function deleteAccount(userId: string, masterPassword: string): Pro
 
 function generateJwt(user: User): string {
   const payload: JwtPayload = { userId: user.id, email: user.email };
-  return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+  return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as any);
 }
 
 async function storeRefreshToken(userId: string): Promise<string> {
