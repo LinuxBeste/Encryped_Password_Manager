@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { TitleBar } from './components/layout/TitleBar';
 import { Sidebar } from './components/layout/Sidebar';
 import { EntryList } from './components/layout/EntryList';
 import { DetailPanel } from './components/layout/DetailPanel';
+import { EntryEditor } from './components/entries/EntryEditor';
 import { UnlockScreen } from './components/vault/UnlockScreen';
 import { SetupWizard } from './components/vault/SetupWizard';
 import { LockOverlay } from './components/vault/LockOverlay';
@@ -23,7 +24,7 @@ export default function App() {
   const { isAuthenticated, isLocked, isFirstRun, login, logout, lock, unlock } = useAuthStore();
   const { selectedNav, selectedEntry, panelView, searchQuery, contextMenu, setSelectedNav, selectEntry, setPanelView, setSearchQuery, setContextMenu } = useUIStore();
   const { entries, folders } = useVaultStore();
-  const { loadVault, favoriteEntry, deleteEntry } = useVault();
+  const { loadVault, createEntry, editEntry, favoriteEntry, deleteEntry } = useVault();
   const settings = useSettings();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -41,6 +42,27 @@ export default function App() {
     }
     return false;
   }, [unlock]);
+
+  const handleAddEntry = useCallback(() => {
+    selectEntry(null);
+    setPanelView('editor');
+  }, [selectEntry, setPanelView]);
+
+  const handleSaveEntry = useCallback(async (data: Partial<VaultEntry>) => {
+    const saved = await createEntry(data);
+    if (saved) {
+      selectEntry(saved);
+      setPanelView('detail');
+    }
+  }, [createEntry, selectEntry, setPanelView]);
+
+  const handleCancelEdit = useCallback(() => {
+    if (selectedEntry) {
+      setPanelView('detail');
+    } else {
+      selectEntry(null);
+    }
+  }, [selectedEntry, selectEntry, setPanelView]);
 
   const handleLock = useCallback(() => {
     lock();
@@ -62,6 +84,25 @@ export default function App() {
       loadVault();
     }
   }, [isAuthenticated, isLocked, isFirstRun, loadVault]);
+
+  const filteredEntries = useMemo(() => {
+    switch (selectedNav) {
+      case 'favorites':
+        return entries.filter((e) => e.favorite);
+      case 'passwords':
+        return entries.filter((e) => e.type === 'password');
+      case 'notes':
+        return entries.filter((e) => e.type === 'note');
+      case 'credit-cards':
+        return entries.filter((e) => e.type === 'credit-card');
+      case 'identities':
+        return entries.filter((e) => e.type === 'identity');
+      case 'ssh-keys':
+        return entries.filter((e) => e.type === 'ssh-key');
+      default:
+        return entries;
+    }
+  }, [selectedNav, entries]);
 
   const handleEntryContextMenu = useCallback((e: React.MouseEvent, entry: VaultEntry) => {
     e.preventDefault();
@@ -92,7 +133,7 @@ export default function App() {
   if (!isAuthenticated || isLocked) {
     return (
       <>
-        <UnlockScreen onUnlock={handleUnlock} onSetup={() => {}} />
+        <UnlockScreen onUnlock={handleUnlock} onSetup={() => useAuthStore.getState().setFirstRun(true)} />
         <GlobalSearch />
       </>
     );
@@ -123,25 +164,30 @@ export default function App() {
         />
 
         <EntryList
-          entries={entries}
+          entries={filteredEntries}
           selectedId={selectedEntry?.id || null}
           onSelect={selectEntry}
+          onAdd={handleAddEntry}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           onContextMenu={handleEntryContextMenu}
         />
 
         <div className="flex-1 bg-panel">
-          {selectedEntry ? (
-            panelView === 'editor' ? (
-              <div>Editor placeholder</div>
-            ) : (
-              <DetailPanel
-                entry={selectedEntry}
-                onEdit={() => setPanelView('editor')}
-                onDelete={() => { deleteEntry(selectedEntry.id); selectEntry(null); }}
-              />
-            )
+          {panelView === 'editor' ? (
+            <EntryEditor
+              key={selectedEntry?.id || 'new'}
+              entry={selectedEntry}
+              folders={folders}
+              onSave={handleSaveEntry}
+              onCancel={handleCancelEdit}
+            />
+          ) : selectedEntry ? (
+            <DetailPanel
+              entry={selectedEntry}
+              onEdit={() => setPanelView('editor')}
+              onDelete={() => { deleteEntry(selectedEntry.id); selectEntry(null); }}
+            />
           ) : (
             <div className="flex items-center justify-center h-full text-text-muted">
               <div className="text-center">

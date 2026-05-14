@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, ArrowUpDown, Filter } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { EntryCard } from '../entries/EntryCard';
 import type { VaultEntry } from '@/types';
 
@@ -10,12 +10,13 @@ interface EntryListProps {
   entries: VaultEntry[];
   selectedId: string | null;
   onSelect: (entry: VaultEntry) => void;
+  onAdd: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onContextMenu: (e: React.MouseEvent, entry: VaultEntry) => void;
 }
 
-export function EntryList({ entries, selectedId, onSelect, searchQuery, onSearchChange, onContextMenu }: EntryListProps) {
+export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, onSearchChange, onContextMenu }: EntryListProps) {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [sort, setSort] = useState<SortType>('az');
 
@@ -74,14 +75,23 @@ export function EntryList({ entries, selectedId, onSelect, searchQuery, onSearch
   return (
     <div className="w-[300px] border-r border-border bg-panel flex flex-col">
       <div className="p-3 border-b border-border">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-          <input
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search entries..."
-            className="w-full h-8 pl-8 pr-3 rounded-md border border-border bg-surface text-text-primary text-body placeholder:text-text-faint focus:outline-none focus:ring-2 focus:ring-accent"
-          />
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <input
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Search entries..."
+              className="w-full h-8 pl-8 pr-3 rounded-md border border-border bg-surface text-text-primary text-body placeholder:text-text-faint focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+          </div>
+          <button
+            onClick={onAdd}
+            className="h-8 w-8 flex items-center justify-center rounded-md border border-border bg-surface text-text-muted hover:text-text-primary hover:bg-hover transition-colors duration-150"
+            title="Add entry"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="flex items-center gap-1.5 mt-2.5">

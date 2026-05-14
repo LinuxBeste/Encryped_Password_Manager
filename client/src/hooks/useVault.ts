@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useVaultStore } from '@/store/vault.store';
 import { useAuthStore } from '@/store/auth.store';
 import { getApi } from '@/services/api.service';
-import type { VaultEntry } from '@/types';
+import type { VaultEntry, VaultFolder } from '@/types';
 
 export function useVault() {
   const { entries, folders, vaultName, vaultId, setVault, addEntry, updateEntry, removeEntry, toggleFavorite, clearVault } = useVaultStore();
@@ -28,9 +28,28 @@ export function useVault() {
         addEntry(response.data.data);
         return response.data.data;
       }
-    } catch { /* ignore */ }
-    return null;
-  }, [addEntry]);
+    } catch { /* fall through to local add */ }
+    const localEntry: VaultEntry = {
+      id: crypto.randomUUID(),
+      vaultId: vaultId || '',
+      folderId: entry.folderId || null,
+      type: entry.type || 'password',
+      title: entry.title || '',
+      username: entry.username || '',
+      password: entry.password || '',
+      url: entry.url || '',
+      notes: entry.notes || '',
+      totpSecret: entry.totpSecret || null,
+      tags: entry.tags || [],
+      customFields: entry.customFields || [],
+      favorite: entry.favorite || false,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      deletedAt: null,
+    };
+    addEntry(localEntry);
+    return localEntry;
+  }, [addEntry, vaultId]);
 
   const editEntry = useCallback(async (id: string, updates: Partial<VaultEntry>) => {
     try {
@@ -62,5 +81,39 @@ export function useVault() {
     }
   }, [toggleFavorite]);
 
-  return { entries, folders, vaultName, vaultId, loadVault, createEntry, editEntry, deleteEntry, favoriteEntry, clearVault };
+  const createFolder = useCallback(async (name: string) => {
+    try {
+      const api = getApi();
+      const response = await api.post('/folders', {
+        vault_id: vaultId,
+        name_encrypted: btoa(name),
+        sort_order: folders.length,
+      });
+      if (response.data.success && response.data.data) {
+        const folder: VaultFolder = {
+          id: response.data.data.id,
+          name,
+          parentId: response.data.data.parent_id || null,
+          sortOrder: response.data.data.sort_order || 0,
+          entryCount: 0,
+        };
+        useVaultStore.getState().addFolder(folder);
+        return folder;
+      }
+    } catch {
+      const id = crypto.randomUUID();
+      const folder: VaultFolder = {
+        id,
+        name,
+        parentId: null,
+        sortOrder: folders.length,
+        entryCount: 0,
+      };
+      useVaultStore.getState().addFolder(folder);
+      return folder;
+    }
+    return null;
+  }, [vaultId, folders.length]);
+
+  return { entries, folders, vaultName, vaultId, loadVault, createEntry, editEntry, deleteEntry, favoriteEntry, createFolder, clearVault };
 }
