@@ -1,0 +1,39 @@
+services:
+  vaultlock-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vaultlock-backend
+    restart: unless-stopped
+    ports:
+      - "3443:3443"
+    volumes:
+      - vaultlock-data:/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3443
+      - DB_PATH=/data/vaultlock.db
+      - JWT_SECRET=${JWT_SECRET:-change-this-to-a-strong-random-secret-in-production}
+      - JWT_EXPIRES_IN=15m
+      - REFRESH_TOKEN_EXPIRES_IN_MS=604800000
+      - CORS_ORIGIN=http://localhost:5173
+      - ARGON2_MEMORY=65536
+      - ARGON2_ITERATIONS=3
+      - ARGON2_PARALLELISM=4
+      - RATE_LIMIT_AUTH=5
+      - RATE_LIMIT_AUTH_WINDOW=900000
+      - RATE_LIMIT_VAULT=30
+      - RATE_LIMIT_VAULT_WINDOW=60000
+      - RATE_LIMIT_DEFAULT=100
+      - RATE_LIMIT_DEFAULT_WINDOW=60000
+      - TOTP_ENABLED=true
+      - CSRF_SECRET=${CSRF_SECRET:-change-me-csrf-secret}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3443/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  vaultlock-data:
