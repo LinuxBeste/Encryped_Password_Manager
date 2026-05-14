@@ -1,4 +1,5 @@
 import * as argon2 from 'argon2';
+import crypto from 'crypto';
 import { config } from '../utils/config';
 
 export async function hashPassword(password: string): Promise<string> {
@@ -19,11 +20,13 @@ export async function verifyPassword(hash: string, password: string): Promise<bo
 }
 
 export function generateSalt(): Buffer {
-  return require('crypto').randomBytes(32);
+  return crypto.randomBytes(32);
 }
 
-export function encryptAes256Gcm(plaintext: Buffer, key: Buffer): { ciphertext: Buffer; iv: Buffer; authTag: Buffer } {
-  const crypto = require('crypto');
+export function encryptAes256Gcm(
+  plaintext: Buffer,
+  key: Buffer,
+): { ciphertext: Buffer; iv: Buffer; authTag: Buffer } {
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
   const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()]);
@@ -37,7 +40,6 @@ export function decryptAes256Gcm(
   iv: Buffer,
   authTag: Buffer,
 ): Buffer {
-  const crypto = require('crypto');
   const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
   decipher.setAuthTag(authTag);
   return Buffer.concat([decipher.update(ciphertext), decipher.final()]);

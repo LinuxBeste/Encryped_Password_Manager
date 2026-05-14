@@ -6,23 +6,19 @@ import { rateLimitDefault } from '../middleware/rateLimit.middleware';
 import { authenticate, AuthRequest } from '../middleware/auth.middleware';
 import { getDb } from '../../db/db';
 import { logAuditEvent } from '../../services/audit.service';
-import { Folder, ApiResponse } from '../../types';
+import { Folder } from '../../types';
 
 const router = Router();
 
 const createFolderSchema = z.object({
   vault_id: z.string().uuid(),
-  name_encrypted: z
-    .instanceof(Buffer)
-    .or(z.string().transform((s) => Buffer.from(s, 'base64'))),
+  name_encrypted: z.instanceof(Buffer).or(z.string().transform((s) => Buffer.from(s, 'base64'))),
   parent_id: z.string().uuid().nullable().optional(),
   sort_order: z.number().int().optional().default(0),
 });
 
 const renameFolderSchema = z.object({
-  name_encrypted: z
-    .instanceof(Buffer)
-    .or(z.string().transform((s) => Buffer.from(s, 'base64'))),
+  name_encrypted: z.instanceof(Buffer).or(z.string().transform((s) => Buffer.from(s, 'base64'))),
 });
 
 const reorderSchema = z.object({
@@ -71,13 +67,9 @@ router.post(
       now,
     );
 
-    logAuditEvent(
-      req.userId!,
-      'folder.create',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-      { folderId: id },
-    );
+    logAuditEvent(req.userId!, 'folder.create', req.ip || '', req.headers['user-agent'] || '', {
+      folderId: id,
+    });
 
     const folder = db.prepare('SELECT * FROM folders WHERE id = ?').get(id);
     res.status(201).json({ success: true, data: folder });
@@ -106,13 +98,9 @@ router.put(
       req.userId!,
     );
 
-    logAuditEvent(
-      req.userId!,
-      'folder.rename',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-      { folderId: req.params.id },
-    );
+    logAuditEvent(req.userId!, 'folder.rename', req.ip || '', req.headers['user-agent'] || '', {
+      folderId: req.params.id,
+    });
 
     const folder = db.prepare('SELECT * FROM folders WHERE id = ?').get(req.params.id);
     res.json({ success: true, data: folder });
@@ -132,21 +120,15 @@ router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Re
 
   const folderId = req.params.id;
   db.transaction(() => {
-    db.prepare('UPDATE entries SET folder_id = NULL, updated_at = ? WHERE folder_id = ? AND user_id = ?').run(
-      Date.now(),
-      folderId,
-      req.userId!,
-    );
+    db.prepare(
+      'UPDATE entries SET folder_id = NULL, updated_at = ? WHERE folder_id = ? AND user_id = ?',
+    ).run(Date.now(), folderId, req.userId!);
     db.prepare('DELETE FROM folders WHERE id = ? AND user_id = ?').run(folderId, req.userId!);
   })();
 
-  logAuditEvent(
-    req.userId!,
-    'folder.delete',
-    req.ip || '',
-    req.headers['user-agent'] || '',
-    { folderId },
-  );
+  logAuditEvent(req.userId!, 'folder.delete', req.ip || '', req.headers['user-agent'] || '', {
+    folderId,
+  });
 
   res.json({ success: true });
 });
@@ -161,18 +143,15 @@ router.patch(
 
     db.transaction(() => {
       for (const folder of req.body.folders) {
-        db.prepare(
-          'UPDATE folders SET sort_order = ? WHERE id = ? AND user_id = ?',
-        ).run(folder.sort_order, folder.id, req.userId!);
+        db.prepare('UPDATE folders SET sort_order = ? WHERE id = ? AND user_id = ?').run(
+          folder.sort_order,
+          folder.id,
+          req.userId!,
+        );
       }
     })();
 
-    logAuditEvent(
-      req.userId!,
-      'folder.reorder',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-    );
+    logAuditEvent(req.userId!, 'folder.reorder', req.ip || '', req.headers['user-agent'] || '');
 
     res.json({ success: true });
   },

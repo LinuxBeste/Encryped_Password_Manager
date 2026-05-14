@@ -1,7 +1,6 @@
-import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { initDb, getDb, closeDb } from '../db/db';
+import { initDb, closeDb } from '../db/db';
 
 describe('Database initialization and schema', () => {
   const testDbPath = path.join(__dirname, '../../test-data/test.db');

@@ -6,7 +6,12 @@ export interface AppError extends Error {
   isOperational?: boolean;
 }
 
-export function errorHandler(err: AppError, _req: Request, res: Response, _next: NextFunction): void {
+export function errorHandler(
+  err: AppError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): void {
   const statusCode = err.statusCode || 500;
   const message = err.isOperational ? err.message : 'Internal server error';
 

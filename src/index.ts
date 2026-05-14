@@ -83,17 +83,12 @@ app.use('/api/entries', entriesRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/settings', settingsRouter);
 
-app.get(
-  '/api/audit',
-  authenticate,
-  rateLimitDefault,
-  (req: AuthRequest, res) => {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = Math.min(parseInt(req.query.limit as string) || 50, 1000);
-    const result = getAuditLogs(req.userId!, page, limit);
-    res.json({ success: true, data: result });
-  },
-);
+app.get('/api/audit', authenticate, rateLimitDefault, (req: AuthRequest, res) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = Math.min(parseInt(req.query.limit as string) || 50, 1000);
+  const result = getAuditLogs(req.userId!, page, limit);
+  res.json({ success: true, data: result });
+});
 
 app.use(errorHandler);
 

@@ -1,10 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/db';
 import { Vault, ApiResponse } from '../types';
 
 export function getVault(userId: string): ApiResponse<{ vault: Vault | null; entries: any[] }> {
   const db = getDb();
-  const vault = db.prepare('SELECT * FROM vaults WHERE user_id = ?').get(userId) as Vault | undefined;
+  const vault = db.prepare('SELECT * FROM vaults WHERE user_id = ?').get(userId) as
+    | Vault
+    | undefined;
   const entries = db
     .prepare(
       `SELECT id, vault_id, folder_id, title_encrypted, type, tags_encrypted, favorite, created_at, updated_at

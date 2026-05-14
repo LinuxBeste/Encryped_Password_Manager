@@ -85,13 +85,9 @@ router.post(
       favorite: req.body.favorite ? 1 : 0,
     });
 
-    logAuditEvent(
-      req.userId!,
-      'entry.create',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-      { entryId: entry.id },
-    );
+    logAuditEvent(req.userId!, 'entry.create', req.ip || '', req.headers['user-agent'] || '', {
+      entryId: entry.id,
+    });
 
     res.status(201).json({ success: true, data: entry });
   },
@@ -115,13 +111,9 @@ router.put(
     const result = updateEntry(req.params.id, req.userId!, req.body);
 
     if (result.success) {
-      logAuditEvent(
-        req.userId!,
-        'entry.update',
-        req.ip || '',
-        req.headers['user-agent'] || '',
-        { entryId: req.params.id },
-      );
+      logAuditEvent(req.userId!, 'entry.update', req.ip || '', req.headers['user-agent'] || '', {
+        entryId: req.params.id,
+      });
     }
 
     res.json(result);
@@ -132,13 +124,9 @@ router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Re
   const result = deleteEntry(req.params.id, req.userId!);
 
   if (result.success) {
-    logAuditEvent(
-      req.userId!,
-      'entry.delete',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-      { entryId: req.params.id },
-    );
+    logAuditEvent(req.userId!, 'entry.delete', req.ip || '', req.headers['user-agent'] || '', {
+      entryId: req.params.id,
+    });
   }
 
   res.json(result);
@@ -166,15 +154,10 @@ router.post(
   },
 );
 
-router.patch(
-  '/:id/favorite',
-  authenticate,
-  rateLimitDefault,
-  (req: AuthRequest, res: Response) => {
-    const result = toggleFavorite(req.params.id, req.userId!);
-    res.json(result);
-  },
-);
+router.patch('/:id/favorite', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
+  const result = toggleFavorite(req.params.id, req.userId!);
+  res.json(result);
+});
 
 router.post(
   '/:id/move',

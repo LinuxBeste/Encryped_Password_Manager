@@ -18,12 +18,7 @@ const syncSchema = z.object({
 router.get('/', authenticate, rateLimitVault, (req: AuthRequest, res: Response) => {
   const result = getVault(req.userId!);
 
-  logAuditEvent(
-    req.userId!,
-    'vault.get',
-    req.ip || '',
-    req.headers['user-agent'] || '',
-  );
+  logAuditEvent(req.userId!, 'vault.get', req.ip || '', req.headers['user-agent'] || '');
 
   res.json(result);
 });
@@ -40,12 +35,7 @@ router.post(
     };
     const result = syncEntries(req.userId!, syncReq);
 
-    logAuditEvent(
-      req.userId!,
-      'vault.sync',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-    );
+    logAuditEvent(req.userId!, 'vault.sync', req.ip || '', req.headers['user-agent'] || '');
 
     res.json(result);
   },
@@ -54,12 +44,7 @@ router.post(
 router.get('/export', authenticate, rateLimitVault, (req: AuthRequest, res: Response) => {
   const result = exportVault(req.userId!);
 
-  logAuditEvent(
-    req.userId!,
-    'vault.export',
-    req.ip || '',
-    req.headers['user-agent'] || '',
-  );
+  logAuditEvent(req.userId!, 'vault.export', req.ip || '', req.headers['user-agent'] || '');
 
   res.json(result);
 });

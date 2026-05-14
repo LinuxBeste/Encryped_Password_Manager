@@ -1,4 +1,3 @@
-import argon2 from 'argon2';
 import { hashPassword, verifyPassword } from '../crypto.service';
 
 describe('crypto.service (argon2id)', () => {

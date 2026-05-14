@@ -18,9 +18,7 @@ export function getEntries(userId: string): Entry[] {
 export function getEntryById(entryId: string, userId: string): Entry | undefined {
   const db = getDb();
   return db
-    .prepare(
-      `SELECT * FROM entries WHERE id = ? AND user_id = ? AND deleted_at IS NULL`,
-    )
+    .prepare(`SELECT * FROM entries WHERE id = ? AND user_id = ? AND deleted_at IS NULL`)
     .get(entryId, userId) as Entry | undefined;
 }
 
@@ -172,17 +170,17 @@ export function moveEntry(
     return { success: false, error: 'Entry not found' };
   }
 
-  db.prepare(
-    'UPDATE entries SET folder_id = ?, updated_at = ? WHERE id = ? AND user_id = ?',
-  ).run(folderId, Date.now(), entryId, userId);
+  db.prepare('UPDATE entries SET folder_id = ?, updated_at = ? WHERE id = ? AND user_id = ?').run(
+    folderId,
+    Date.now(),
+    entryId,
+    userId,
+  );
 
   return { success: true, data: getEntryById(entryId, userId)! };
 }
 
-export function syncEntries(
-  userId: string,
-  request: SyncRequest,
-): ApiResponse<SyncResponse> {
+export function syncEntries(userId: string, request: SyncRequest): ApiResponse<SyncResponse> {
   const db = getDb();
   const syncAt = Date.now();
 
@@ -194,9 +192,7 @@ export function syncEntries(
     .all(userId, request.lastSyncAt) as Entry[];
 
   const folders = db
-    .prepare(
-      'SELECT * FROM folders WHERE user_id = ? AND created_at > ? ORDER BY sort_order ASC',
-    )
+    .prepare('SELECT * FROM folders WHERE user_id = ? AND created_at > ? ORDER BY sort_order ASC')
     .all(userId, request.lastSyncAt) as any[];
 
   return {

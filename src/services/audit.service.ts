@@ -31,9 +31,7 @@ export function getAuditLogs(
     .get(userId) as { total: number };
 
   const items = db
-    .prepare(
-      'SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?',
-    )
+    .prepare('SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?')
     .all(userId, Math.min(limit, 1000), offset) as AuditLog[];
 
   return {

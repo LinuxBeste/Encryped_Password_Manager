@@ -1,5 +1,7 @@
 import { Router, Response } from 'express';
 import { z } from 'zod';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 import { validate } from '../middleware/validate.middleware';
 import { rateLimitAuth } from '../middleware/rateLimit.middleware';
 import { authenticate, AuthRequest } from '../middleware/auth.middleware';
@@ -9,11 +11,10 @@ import {
   refreshAccessToken,
   logoutUser,
   deleteAccount,
-  verifyTotpAndLogin,
 } from '../../services/auth.service';
 import { logAuditEvent } from '../../services/audit.service';
+import { getDb } from '../../db/db';
 import { config } from '../../utils/config';
-import { ApiResponse } from '../../types';
 
 const router = Router();
 
@@ -39,17 +40,17 @@ const deleteAccountSchema = z.object({
   masterPassword: z.string(),
 });
 
-const totpVerifySchema = z.object({
-  userId: z.string().uuid(),
-  code: z.string().length(6),
-});
-
 router.post('/register', rateLimitAuth, validate(registerSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
   const result = await registerUser(email, masterPassword);
 
   if (result.success) {
-    logAuditEvent(result.data!.userId, 'auth.register', req.ip || '', req.headers['user-agent'] || '');
+    logAuditEvent(
+      result.data!.userId,
+      'auth.register',
+      req.ip || '',
+      req.headers['user-agent'] || '',
+    );
   }
 
   res.status(result.success ? 201 : 409).json(result);
@@ -130,33 +131,20 @@ router.delete(
   },
 );
 
-router.post(
-  '/totp/setup',
-  authenticate,
-  rateLimitAuth,
-  async (req: AuthRequest, res: Response) => {
-    const { authenticator } = require('otplib');
-    const secret = authenticator.generateSecret();
-    const serviceName = 'VaultLock';
-    const otpauth = authenticator.keyuri(req.userEmail!, serviceName, secret);
+router.post('/totp/setup', authenticate, rateLimitAuth, async (req: AuthRequest, res: Response) => {
+  const secret = authenticator.generateSecret();
+  const serviceName = 'VaultLock';
+  const otpauth = authenticator.keyuri(req.userEmail!, serviceName, secret);
 
-    const { toDataURL } = require('qrcode');
+  const db = getDb();
+  db.prepare('UPDATE users SET totp_secret = ? WHERE id = ?').run(secret, req.userId);
 
-    const db = require('../../db/db').getDb();
-    db.prepare('UPDATE users SET totp_secret = ? WHERE id = ?').run(secret, req.userId);
+  const qrCode = await toDataURL(otpauth);
 
-    const qrCode = await toDataURL(otpauth);
+  logAuditEvent(req.userId!, 'auth.totp.setup', req.ip || '', req.headers['user-agent'] || '');
 
-    logAuditEvent(
-      req.userId!,
-      'auth.totp.setup',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-    );
-
-    res.json({ success: true, data: { secret, qrCode, otpauth } });
-  },
-);
+  res.json({ success: true, data: { secret, qrCode, otpauth } });
+});
 
 router.post(
   '/totp/verify',
@@ -169,49 +157,37 @@ router.post(
       return;
     }
 
-    const db = require('../../db/db').getDb();
-    const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(req.userId) as any;
+    const db = getDb();
+    const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(req.userId) as
+      | {
+          totp_secret: string;
+        }
+      | undefined;
 
     if (!user?.totp_secret) {
       res.status(400).json({ success: false, error: 'TOTP not set up' });
       return;
     }
 
-    const { authenticator } = require('otplib');
     const isValid = authenticator.check(code, user.totp_secret);
     if (!isValid) {
       res.json({ success: false, error: 'Invalid code' });
       return;
     }
 
-    logAuditEvent(
-      req.userId!,
-      'auth.totp.verify',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-    );
+    logAuditEvent(req.userId!, 'auth.totp.verify', req.ip || '', req.headers['user-agent'] || '');
 
     res.json({ success: true, data: { verified: true } });
   },
 );
 
-router.delete(
-  '/totp',
-  authenticate,
-  rateLimitAuth,
-  async (req: AuthRequest, res: Response) => {
-    const db = require('../../db/db').getDb();
-    db.prepare('UPDATE users SET totp_secret = NULL WHERE id = ?').run(req.userId);
+router.delete('/totp', authenticate, rateLimitAuth, async (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  db.prepare('UPDATE users SET totp_secret = NULL WHERE id = ?').run(req.userId);
 
-    logAuditEvent(
-      req.userId!,
-      'auth.totp.disable',
-      req.ip || '',
-      req.headers['user-agent'] || '',
-    );
+  logAuditEvent(req.userId!, 'auth.totp.disable', req.ip || '', req.headers['user-agent'] || '');
 
-    res.json({ success: true });
-  },
-);
+  res.json({ success: true });
+});
 
 export { router as authRouter };
