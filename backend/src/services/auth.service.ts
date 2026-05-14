@@ -123,7 +123,7 @@ export function refreshAccessToken(
   return { success: true, data: { token, refreshToken: newRefreshTokenStr } };
 }
 
-export async function logoutUser(refreshTokenStr: string): Promise<ApiResponse> {
+export function logoutUser(refreshTokenStr: string): ApiResponse {
   const db = getDb();
   const hash = crypto.createHash('sha256').update(refreshTokenStr).digest('hex');
 
