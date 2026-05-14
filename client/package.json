@@ -1,0 +1,48 @@
+{
+  "name": "vaultlock-client",
+  "version": "1.0.0",
+  "description": "VaultLock – Premium Offline Encrypted Password Manager",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "NODE_ENV=development vite build && electron .",
+    "build": "tsc --noEmit && vite build && tsc --project tsconfig.electron.json",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "lint": "eslint src/ electron/ --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.electron.json --noEmit"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "lucide-react": "^0.400.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.4",
+    "zxcvbn": "^4.4.2",
+    "@otplib/core": "^12.0.1",
+    "@otplib/plugin-crypto": "^12.0.1",
+    "argon2-browser": "^1.18.0",
+    "marked": "^12.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["electron", "esbuild"]
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/zxcvbn": "^4.4.3",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "electron": "^30.1.0",
+    "electron-builder": "^24.13.3",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.0",
+    "vite": "^5.3.1"
+  }
+}
