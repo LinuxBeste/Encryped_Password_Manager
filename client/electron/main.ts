@@ -30,8 +30,8 @@ function createWindow() {
     height: 800,
     minWidth: 900,
     minHeight: 600,
-    frame: process.platform === 'darwin',
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined,
+    frame: true,
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     backgroundColor: '#0d1117',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -41,14 +41,7 @@ function createWindow() {
     },
   });
 
-  const w = mainWindow;
-  if (isDev && w) {
-    w.loadURL('http://localhost:5173').catch(() => {
-      w.loadFile(path.join(__dirname, '../dist/index.html'));
-    });
-  } else if (w) {
-    w.loadFile(path.join(__dirname, '../dist/index.html'));
-  }
+  mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
 
   mainWindow.on('closed', () => { mainWindow = null; });
 
