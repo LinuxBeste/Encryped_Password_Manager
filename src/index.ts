@@ -6,6 +6,7 @@ import { config } from './utils/config';
 import { logger } from './utils/logger';
 import { initDb, getDb, closeDb } from './db/db';
 import { errorHandler } from './api/middleware/error.middleware';
+import { csrfProtection } from './api/middleware/csrf.middleware';
 import { authenticate, AuthRequest } from './api/middleware/auth.middleware';
 import { rateLimitDefault } from './api/middleware/rateLimit.middleware';
 import { authRouter } from './api/routes/auth.routes';
@@ -50,6 +51,7 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json({ limit: '5mb' }));
+app.use(csrfProtection);
 
 const startTime = Date.now();
 
