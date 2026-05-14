@@ -9,3 +9,5 @@ dev-data/
 coverage/
 .cache/
 tmp/
+test-data/
+vaultlock-prompts.md
