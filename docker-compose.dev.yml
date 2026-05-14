@@ -1,0 +1,24 @@
+services:
+  vaultlock-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vaultlock-backend:dev
+    container_name: vaultlock-api-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src:ro
+      - ./dev-data/db:/data/db
+      - ./.env:/app/.env:ro
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_PATH=/data/db/vaultlock.db
+    command: npx ts-node-dev --respawn --transpile-only src/index.ts
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '1.0'
