@@ -41,12 +41,13 @@ function createWindow() {
     },
   });
 
-  if (isDev) {
-    mainWindow.loadURL('http://localhost:5173').catch(() => {
-      mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+  const w = mainWindow;
+  if (isDev && w) {
+    w.loadURL('http://localhost:5173').catch(() => {
+      w.loadFile(path.join(__dirname, '../dist/index.html'));
     });
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+  } else if (w) {
+    w.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
   mainWindow.on('closed', () => { mainWindow = null; });
