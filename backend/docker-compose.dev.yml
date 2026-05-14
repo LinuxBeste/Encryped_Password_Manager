@@ -2,7 +2,7 @@ services:
   vaultlock-api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     image: vaultlock-backend:dev
     container_name: vaultlock-api-dev
     restart: unless-stopped
@@ -11,6 +11,7 @@ services:
     volumes:
       - ./src:/app/src:ro
       - ./dev-data/db:/data/db
+      - ./tsconfig.json:/app/tsconfig.json:ro
       - ./.env:/app/.env:ro
     environment:
       - NODE_ENV=development

@@ -8,6 +8,7 @@ services:
       - "3000:3000"
     volumes:
       - ./backend/src:/app/src
+      - ./backend/tsconfig.json:/app/tsconfig.json
       - ./backend/data:/data
     environment:
       - NODE_ENV=development
