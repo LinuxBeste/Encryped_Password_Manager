@@ -6,7 +6,8 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "dev:electron": "NODE_ENV=development vite build && electron .",
+    "dev:electron": "tsc --project tsconfig.electron.json && NODE_ENV=development vite build && electron .",
+
     "build": "tsc --noEmit && vite build && tsc --project tsconfig.electron.json",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
