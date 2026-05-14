@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -11,7 +11,7 @@ COPY tsconfig.json ./
 COPY src/ ./src/
 RUN pnpm exec tsc
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 RUN addgroup -S vaultlock && adduser -S vaultlock -G vaultlock
 
