@@ -17,8 +17,10 @@ import { settingsRouter } from './api/routes/settings.routes';
 import { getAuditLogs } from './services/audit.service';
 import { ApiResponse } from './types';
 
+// Create Express application
 const app = express();
 
+// Set security headers via Helmet
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -40,6 +42,7 @@ app.use(
   }),
 );
 
+// Configure CORS for the frontend origin
 app.use(
   cors({
     origin: config.corsOrigin,
@@ -49,12 +52,15 @@ app.use(
   }),
 );
 
+// Parse cookies, JSON bodies, and add CSRF protection
 app.use(cookieParser());
 app.use(express.json({ limit: '5mb' }));
 app.use(csrfProtection);
 
+// Record server start timestamp
 const startTime = Date.now();
 
+// Health check: returns server status and DB connectivity
 app.get('/api/health', (_req, res) => {
   let dbOk = false;
   try {
@@ -77,12 +83,14 @@ app.get('/api/health', (_req, res) => {
   res.json(response);
 });
 
+// Mount all API route groups
 app.use('/api/auth', authRouter);
 app.use('/api/vault', vaultRouter);
 app.use('/api/entries', entriesRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/settings', settingsRouter);
 
+// Paginated audit log endpoint (requires auth + rate limit)
 app.get('/api/audit', authenticate, rateLimitDefault, (req: AuthRequest, res) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = Math.min(parseInt(req.query.limit as string) || 50, 1000);
@@ -90,8 +98,10 @@ app.get('/api/audit', authenticate, rateLimitDefault, (req: AuthRequest, res) =>
   res.json({ success: true, data: result });
 });
 
+// Global error handler (last middleware)
 app.use(errorHandler);
 
+// Initialize DB and start HTTP server
 function start(): void {
   initDb();
 
@@ -102,12 +112,14 @@ function start(): void {
   });
 }
 
+// Graceful shutdown on SIGINT
 process.on('SIGINT', () => {
   logger.info('Shutting down...');
   closeDb();
   process.exit(0);
 });
 
+// Graceful shutdown on SIGTERM
 process.on('SIGTERM', () => {
   logger.info('Shutting down...');
   closeDb();

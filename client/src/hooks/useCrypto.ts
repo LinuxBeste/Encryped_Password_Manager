@@ -2,12 +2,14 @@ import { useState, useCallback } from 'react';
 import { deriveKey, encrypt, decrypt, generateSalt } from '@/services/crypto.service';
 import type { EncryptedData } from '@/services/crypto.service';
 
+// Hook wrapping crypto operations with loading/error state
 export function useCrypto() {
   const [deriving, setDeriving] = useState(false);
   const [encrypting, setEncrypting] = useState(false);
   const [decrypting, setDecrypting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Derive master key from password and email
   const deriveMasterKey = useCallback(async (password: string, email: string, salt?: Uint8Array) => {
     setDeriving(true);
     setError(null);
@@ -22,6 +24,7 @@ export function useCrypto() {
     }
   }, []);
 
+  // Encrypt plaintext with derived key and salt
   const encryptData = useCallback(async (plaintext: string, key: CryptoKey, salt: Uint8Array) => {
     setEncrypting(true);
     setError(null);
@@ -36,6 +39,7 @@ export function useCrypto() {
     }
   }, []);
 
+  // Decrypt data using password and email to re-derive key
   const decryptData = useCallback(async (data: EncryptedData, password: string, email: string) => {
     setDecrypting(true);
     setError(null);

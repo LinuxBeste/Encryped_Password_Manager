@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 
+// Colored badge/tag for status indicators
 interface BadgeProps {
   children: ReactNode;
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';

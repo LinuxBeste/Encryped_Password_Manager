@@ -13,12 +13,14 @@ import { TOTPTab } from './tabs/TOTPTab';
 import { ShortcutsTab } from './tabs/ShortcutsTab';
 import { DangerZoneTab } from './tabs/DangerZoneTab';
 
+// Settings sidebar tab definition
 interface Tab {
   id: string;
   label: string;
   icon: typeof Settings;
 }
 
+// All available settings tabs
 const tabs: Tab[] = [
   { id: 'general', label: 'General', icon: Settings },
   { id: 'security', label: 'Security', icon: Shield },
@@ -38,6 +40,7 @@ interface SettingsPageProps {
 export function SettingsPage({ onClose }: SettingsPageProps) {
   const [activeTab, setActiveTab] = useState('general');
 
+  // Renders the active tab's content component
   const renderTab = () => {
     switch (activeTab) {
       case 'general': return <GeneralTab />;

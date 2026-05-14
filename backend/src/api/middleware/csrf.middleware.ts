@@ -7,6 +7,7 @@ const CSRF_HEADER = 'x-csrf-token';
 
 const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
 
+// Validates CSRF token cookie matches header on mutating requests; sets cookie on safe methods
 export function csrfProtection(req: Request, res: Response, next: NextFunction): void {
   if (safeMethods.includes(req.method)) {
     if (!req.cookies[CSRF_COOKIE]) {

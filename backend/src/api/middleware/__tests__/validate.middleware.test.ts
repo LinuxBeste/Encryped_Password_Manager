@@ -2,6 +2,7 @@ import { validate } from '../validate.middleware';
 import { z, ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
+// Creates mock request/response with body tracking
 function mockReqRes(body: any = {}): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
   const req = { body, query: {}, params: {} } as unknown as Request;
 
@@ -24,6 +25,7 @@ function mockReqRes(body: any = {}): { req: Request; res: Response & { _status: 
   return { req, res, next };
 }
 
+// Test schema with email, age, and name fields
 const testSchema = z.object({
   email: z.string().email(),
   age: z.number().min(0).max(150),

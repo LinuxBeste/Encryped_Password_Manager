@@ -2,6 +2,7 @@ import * as argon2 from 'argon2';
 import crypto from 'crypto';
 import { config } from '../utils/config';
 
+// Hash a password using Argon2id
 export async function hashPassword(password: string): Promise<string> {
   return argon2.hash(password, {
     type: argon2.argon2id,
@@ -11,6 +12,7 @@ export async function hashPassword(password: string): Promise<string> {
   });
 }
 
+// Verify a password against its Argon2 hash
 export async function verifyPassword(hash: string, password: string): Promise<boolean> {
   try {
     return await argon2.verify(hash, password);
@@ -19,10 +21,12 @@ export async function verifyPassword(hash: string, password: string): Promise<bo
   }
 }
 
+// Generate a cryptographically random salt
 export function generateSalt(): Buffer {
   return crypto.randomBytes(32);
 }
 
+// Encrypt plaintext using AES-256-GCM
 export function encryptAes256Gcm(
   plaintext: Buffer,
   key: Buffer,
@@ -34,6 +38,7 @@ export function encryptAes256Gcm(
   return { ciphertext: encrypted, iv, authTag };
 }
 
+// Decrypt ciphertext using AES-256-GCM
 export function decryptAes256Gcm(
   ciphertext: Buffer,
   key: Buffer,

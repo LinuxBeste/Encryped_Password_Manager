@@ -2,6 +2,7 @@ interface TitleBarProps {
   title?: string;
 }
 
+// macOS window title bar with drag region, hidden on other platforms
 export function TitleBar({ title = 'VaultLock' }: TitleBarProps) {
   const isMac = navigator.userAgent.includes('Mac');
 

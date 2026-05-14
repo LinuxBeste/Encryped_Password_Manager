@@ -8,6 +8,7 @@ import { logger } from '../utils/logger';
 import { hashPassword, verifyPassword } from './crypto.service';
 import { User, JwtPayload, ApiResponse } from '../types';
 
+// Register a new user with email and master password
 export async function registerUser(
   email: string,
   masterPassword: string,
@@ -40,6 +41,7 @@ export async function registerUser(
   return { success: true, data: { userId } };
 }
 
+// Authenticate user with email and master password
 export async function loginUser(
   email: string,
   masterPassword: string,
@@ -72,6 +74,7 @@ export async function loginUser(
   return { success: true, data: { userId: user.id, email: user.email, token, refreshToken } };
 }
 
+// Verify TOTP code and complete login
 export function verifyTotpAndLogin(
   userId: string,
   totpCode: string,
@@ -96,6 +99,7 @@ export function verifyTotpAndLogin(
   return { success: true, data: { token, refreshToken } };
 }
 
+// Issue new access token using a valid refresh token
 export function refreshAccessToken(
   refreshTokenStr: string,
 ): ApiResponse<{ token: string; refreshToken: string }> {
@@ -123,6 +127,7 @@ export function refreshAccessToken(
   return { success: true, data: { token, refreshToken: newRefreshTokenStr } };
 }
 
+// Revoke a refresh token to log out
 export function logoutUser(refreshTokenStr: string): ApiResponse {
   const db = getDb();
   const hash = crypto.createHash('sha256').update(refreshTokenStr).digest('hex');
@@ -132,6 +137,7 @@ export function logoutUser(refreshTokenStr: string): ApiResponse {
   return { success: true };
 }
 
+// Delete user account and all associated data
 export async function deleteAccount(userId: string, masterPassword: string): Promise<ApiResponse> {
   const db = getDb();
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as User | undefined;
@@ -159,11 +165,13 @@ export async function deleteAccount(userId: string, masterPassword: string): Pro
   return { success: true };
 }
 
+// Sign a JWT access token for the user
 function generateJwt(user: User): string {
   const payload: JwtPayload = { userId: user.id, email: user.email };
   return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as any);
 }
 
+// Generate and persist a new refresh token
 function storeRefreshToken(userId: string): string {
   const db = getDb();
   const tokenStr = uuidv4() + '-' + uuidv4();

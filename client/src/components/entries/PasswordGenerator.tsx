@@ -12,10 +12,12 @@ interface PasswordGeneratorProps {
   onClose: () => void;
 }
 
+// Modal dialog for generating random passwords
 export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps) {
   const { options, current, history, generate, updateOption } = usePasswordGenerator();
   const [copied, setCopied] = useState(false);
 
+  // Copy generated password to clipboard
   const handleCopy = async () => {
     if (!current) return;
     try {
@@ -32,6 +34,7 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
   return (
     <Modal open title="Password Generator" onClose={onClose} size="md">
       <div className="space-y-5">
+        {/* Generated password display with refresh/copy */}
         <div className="flex items-center gap-2">
           <div className="flex-1">
             <div className="h-10 px-3 rounded-md border border-border bg-surface text-text-primary font-mono text-heading flex items-center truncate">
@@ -46,11 +49,14 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
           </Button>
         </div>
 
+        {/* Password strength meter */}
         {current && (
           <StrengthMeter score={current.score.score} />
         )}
 
+        {/* Generator options */}
         <div className="space-y-3">
+          {/* Length slider */}
           <Slider
             label="Length"
             value={options.length}
@@ -59,6 +65,7 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
             max={128}
           />
 
+          {/* Character set toggles */}
           <div className="space-y-2">
             <Toggle checked={options.uppercase} onChange={(v) => updateOption('uppercase', v)} label="Uppercase (A–Z)" />
             <Toggle checked={options.lowercase} onChange={(v) => updateOption('lowercase', v)} label="Lowercase (a–z)" />
@@ -67,6 +74,7 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
             <Toggle checked={options.excludeAmbiguous} onChange={(v) => updateOption('excludeAmbiguous', v)} label="Exclude ambiguous (0O1lI5S2Z)" />
           </div>
 
+          {/* Word-based passphrase options */}
           <div className="border-t border-border pt-3">
             <Toggle checked={options.useWords} onChange={(v) => updateOption('useWords', v)} label="Word-based passphrase" />
             {options.useWords && (
@@ -79,6 +87,7 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
           </div>
         </div>
 
+        {/* Recently generated password history */}
         {history.length > 0 && (
           <div className="border-t border-border pt-3">
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-2 block">History (last 10)</label>
@@ -97,6 +106,7 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
           </div>
         )}
 
+        {/* Action buttons */}
         <div className="flex justify-end gap-2 pt-2 border-t border-border">
           <Button variant="ghost" size="md" onClick={onClose}>Cancel</Button>
           <Button variant="primary" size="md" onClick={() => current && onSelect(current.password)} disabled={!current}>

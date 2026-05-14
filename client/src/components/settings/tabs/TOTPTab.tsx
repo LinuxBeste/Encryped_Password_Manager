@@ -5,6 +5,7 @@ import { TOTPDisplay } from '@/components/entries/TOTPDisplay';
 import { useVaultStore } from '@/store/vault.store';
 import { EmptyState } from '@/components/ui/EmptyState';
 
+// TOTP/2FA tab: displays entries with TOTP secrets and their live codes
 export function TOTPTab() {
   const entries = useVaultStore((s) => s.entries);
   const totpEntries = entries.filter((e) => e.totpSecret);

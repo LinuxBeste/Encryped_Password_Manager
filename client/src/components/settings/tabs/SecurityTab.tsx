@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 
+// Security settings: auto-lock, clipboard timeout, biometrics, password change
 export function SecurityTab() {
   const { settings, updateSecurity } = useSettingsStore();
   const [showChangePassword, setShowChangePassword] = useState(false);

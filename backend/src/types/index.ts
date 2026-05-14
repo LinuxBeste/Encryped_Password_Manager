@@ -1,3 +1,4 @@
+// Database row shape for a user account
 export interface User {
   id: string;
   email: string;
@@ -7,6 +8,7 @@ export interface User {
   totp_secret: string | null;
 }
 
+// Database row shape for an encrypted vault
 export interface Vault {
   id: string;
   user_id: string;
@@ -18,6 +20,7 @@ export interface Vault {
   updated_at: number;
 }
 
+// Database row shape for a folder
 export interface Folder {
   id: string;
   vault_id: string;
@@ -28,6 +31,7 @@ export interface Folder {
   created_at: number;
 }
 
+// Database row shape for a password entry
 export interface Entry {
   id: string;
   vault_id: string;
@@ -45,6 +49,7 @@ export interface Entry {
   deleted_at: number | null;
 }
 
+// Database row shape for a refresh token
 export interface RefreshToken {
   id: string;
   user_id: string;
@@ -54,6 +59,7 @@ export interface RefreshToken {
   created_at: number;
 }
 
+// Database row shape for an audit log entry
 export interface AuditLog {
   id: string;
   user_id: string;
@@ -64,6 +70,7 @@ export interface AuditLog {
   timestamp: number;
 }
 
+// Database row shape for a user setting
 export interface Setting {
   user_id: string;
   key: string;
@@ -71,28 +78,33 @@ export interface Setting {
   updated_at: number;
 }
 
+// Generic API response wrapper
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
+// Decoded JWT token payload
 export interface JwtPayload {
   userId: string;
   email: string;
 }
 
+// Sync request body
 export interface SyncRequest {
   lastSyncAt: number;
   deletedIds: string[];
 }
 
+// Sync response body
 export interface SyncResponse {
   entries: Entry[];
   folders: Folder[];
   syncAt: number;
 }
 
+// Paginated result wrapper
 export interface PaginatedResult<T> {
   items: T[];
   total: number;

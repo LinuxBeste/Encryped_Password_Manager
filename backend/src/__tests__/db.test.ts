@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const testDbPath = path.join(__dirname, '../../../test-data/test.db');
 
+// Creates a fresh test database with clean slate
 function freshDb() {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

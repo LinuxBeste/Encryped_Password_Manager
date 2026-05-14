@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 
+// Modal dialog component props
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -17,10 +18,12 @@ const sizeStyles = {
   lg: 'max-w-[640px]',
 };
 
+// Overlay modal with keyboard/backdrop dismiss, focus trap, and scroll lock
 export function Modal({ open, onClose, title, children, size = 'md', closeOnBackdrop = true, showCloseButton = true }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Closes modal on Escape key press
   const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose();
   }, [onClose]);

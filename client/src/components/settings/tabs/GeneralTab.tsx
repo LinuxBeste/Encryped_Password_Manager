@@ -2,6 +2,7 @@ import { useSettingsStore } from '@/store/settings.store';
 import { Select } from '@/components/ui/Select';
 import { Toggle } from '@/components/ui/Toggle';
 
+// General settings: language, default entry type, and UI toggles
 export function GeneralTab() {
   const { settings, updateUI } = useSettingsStore();
 

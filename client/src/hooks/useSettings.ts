@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
 import { useSettingsStore } from '@/store/settings.store';
 
+// Hook to load settings on mount and apply theme/accent to document root
 export function useSettings() {
   const store = useSettingsStore();
 
+  // Load persisted settings if not yet loaded
   useEffect(() => {
     if (!store.loaded) {
       store.loadSettings();
     }
   }, [store.loaded, store.loadSettings]);
 
+  // Apply theme class (dark/light) to document element
   useEffect(() => {
     if (store.loaded) {
       const { theme } = store.settings.ui;
@@ -23,6 +26,7 @@ export function useSettings() {
     }
   }, [store.loaded, store.settings.ui.theme]);
 
+  // Apply accent color CSS custom property
   useEffect(() => {
     if (store.loaded) {
       const root = document.documentElement;

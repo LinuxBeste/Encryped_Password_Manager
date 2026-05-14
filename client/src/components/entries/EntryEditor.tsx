@@ -15,6 +15,7 @@ interface EntryEditorProps {
   onCancel: () => void;
 }
 
+// Create/edit form for a vault entry
 export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorProps) {
   const [title, setTitle] = useState(entry?.title || '');
   const [type, setType] = useState<EntryType>(entry?.type || 'password');
@@ -27,6 +28,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
 
   const passwordScore = password ? scorePassword(password).score : 0;
 
+  // Collect form data and call onSave
   const handleSave = () => {
     onSave({
       title,
@@ -44,6 +46,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
 
   return (
     <div className="flex flex-col h-full">
+      {/* Editor header with save/cancel */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <h1 className="text-heading font-semibold text-text-primary">
           {entry ? 'Edit Entry' : 'New Entry'}
@@ -60,9 +63,11 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
         </div>
       </div>
 
+      {/* Form fields */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Entry title" />
 
+        {/* Entry type selector */}
         <Select
           label="Type"
           value={type}
@@ -76,6 +81,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
           ]}
         />
 
+        {/* Password field with generator button */}
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <PasswordField
@@ -93,6 +99,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
         <Input label="Username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username@example.com" />
         <Input label="URL" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
 
+        {/* Notes textarea */}
         <div>
           <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1.5 block">Notes</label>
           <textarea
@@ -104,6 +111,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
           />
         </div>
 
+        {/* Folder selector */}
         {folders.length > 0 && (
           <Select
             label="Folder"
@@ -117,6 +125,7 @@ export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorPro
         )}
       </div>
 
+      {/* Password generator modal */}
       {showGenerator && (
         <PasswordGenerator
           onSelect={(password) => { setPassword(password); setShowGenerator(false); }}

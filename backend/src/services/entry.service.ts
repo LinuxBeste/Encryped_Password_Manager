@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/db';
 import { Entry, ApiResponse, SyncRequest, SyncResponse } from '../types';
 
+// Get all non-deleted entries for a user
 export function getEntries(userId: string): Entry[] {
   const db = getDb();
   return db
@@ -15,6 +16,7 @@ export function getEntries(userId: string): Entry[] {
     .all(userId) as Entry[];
 }
 
+// Get a single entry by ID for a user
 export function getEntryById(entryId: string, userId: string): Entry | undefined {
   const db = getDb();
   return db
@@ -22,6 +24,7 @@ export function getEntryById(entryId: string, userId: string): Entry | undefined
     .get(entryId, userId) as Entry | undefined;
 }
 
+// Create a new encrypted entry
 export function createEntry(
   data: Omit<Entry, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>,
 ): Entry {
@@ -52,6 +55,7 @@ export function createEntry(
   return getEntryById(id, data.user_id)!;
 }
 
+// Update select fields of an existing entry
 export function updateEntry(
   entryId: string,
   userId: string,
@@ -108,6 +112,7 @@ export function updateEntry(
   return { success: true, data: getEntryById(entryId, userId)! };
 }
 
+// Soft-delete an entry by setting deleted_at
 export function deleteEntry(entryId: string, userId: string): ApiResponse {
   const db = getDb();
   const existing = getEntryById(entryId, userId);
@@ -124,6 +129,7 @@ export function deleteEntry(entryId: string, userId: string): ApiResponse {
   return { success: true };
 }
 
+// Soft-delete multiple entries in a transaction
 export function bulkDeleteEntries(ids: string[], userId: string): ApiResponse {
   const db = getDb();
   const now = Date.now();
@@ -141,6 +147,7 @@ export function bulkDeleteEntries(ids: string[], userId: string): ApiResponse {
   return { success: true };
 }
 
+// Toggle the favorite flag on an entry
 export function toggleFavorite(entryId: string, userId: string): ApiResponse<Entry> {
   const db = getDb();
   const existing = getEntryById(entryId, userId);
@@ -159,6 +166,7 @@ export function toggleFavorite(entryId: string, userId: string): ApiResponse<Ent
   return { success: true, data: getEntryById(entryId, userId)! };
 }
 
+// Move an entry to a different folder
 export function moveEntry(
   entryId: string,
   userId: string,
@@ -180,6 +188,7 @@ export function moveEntry(
   return { success: true, data: getEntryById(entryId, userId)! };
 }
 
+// Sync entries updated since lastSyncAt
 export function syncEntries(userId: string, request: SyncRequest): ApiResponse<SyncResponse> {
   const db = getDb();
   const syncAt = Date.now();

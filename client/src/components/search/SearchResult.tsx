@@ -5,6 +5,7 @@ interface SearchResultProps {
   resultCount: number;
 }
 
+// Header bar showing the number of results for the current search query
 export function SearchResult({ query, resultCount }: SearchResultProps) {
   if (!query) return null;
 

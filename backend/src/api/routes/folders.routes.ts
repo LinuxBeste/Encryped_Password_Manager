@@ -10,6 +10,7 @@ import { Folder } from '../../types';
 
 const router = Router();
 
+// Schema: vault ID + encrypted name + optional parent folder
 const createFolderSchema = z.object({
   vault_id: z.string().uuid(),
   name_encrypted: z.instanceof(Buffer).or(z.string().transform((s) => Buffer.from(s, 'base64'))),
@@ -17,10 +18,12 @@ const createFolderSchema = z.object({
   sort_order: z.number().int().optional().default(0),
 });
 
+// Schema: new encrypted name for renaming a folder
 const renameFolderSchema = z.object({
   name_encrypted: z.instanceof(Buffer).or(z.string().transform((s) => Buffer.from(s, 'base64'))),
 });
 
+// Schema: array of folder IDs with new sort positions
 const reorderSchema = z.object({
   folders: z.array(
     z.object({
@@ -30,6 +33,7 @@ const reorderSchema = z.object({
   ),
 });
 
+// List all folders for the authenticated user with entry counts
 router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const db = getDb();
   const folders = db
@@ -44,6 +48,7 @@ router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response
   res.json({ success: true, data: folders });
 });
 
+// Create a new folder in a vault
 router.post(
   '/',
   authenticate,
@@ -76,6 +81,7 @@ router.post(
   },
 );
 
+// Rename a folder
 router.put(
   '/:id',
   authenticate,
@@ -107,6 +113,7 @@ router.put(
   },
 );
 
+// Delete a folder and unlink its entries (set folder_id to null)
 router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const db = getDb();
   const existing = db
@@ -133,6 +140,7 @@ router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Re
   res.json({ success: true });
 });
 
+// Reorder folders by updating their sort_order values
 router.patch(
   '/reorder',
   authenticate,

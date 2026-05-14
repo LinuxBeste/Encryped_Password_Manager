@@ -20,9 +20,11 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [sort, setSort] = useState<SortType>('az');
 
+  // Filter and sort entries based on search query, active filter, and sort order
   const filtered = useMemo(() => {
     let result = [...entries];
 
+    // Filter by search query across title, username, url, notes
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -34,6 +36,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
       );
     }
 
+    // Apply preset filter (favorites, weak, reused, old)
     switch (activeFilter) {
       case 'favorites':
         result = result.filter((e) => e.favorite);
@@ -51,6 +54,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
       }
     }
 
+    // Sort by selected criteria
     switch (sort) {
       case 'az':
         result.sort((a, b) => a.title.localeCompare(b.title));
@@ -74,6 +78,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
 
   return (
     <div className="w-[300px] border-r border-border bg-panel flex flex-col">
+      {/* Search bar and add button */}
       <div className="p-3 border-b border-border">
         <div className="relative flex items-center gap-2">
           <div className="relative flex-1">
@@ -94,6 +99,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
           </button>
         </div>
 
+        {/* Quick filter buttons */}
         <div className="flex items-center gap-1.5 mt-2.5">
           {(['all', 'favorites', 'weak', 'reused', 'old'] as const).map((f) => (
             <button
@@ -110,6 +116,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
           ))}
         </div>
 
+        {/* Entry count and sort selector */}
         <div className="flex items-center justify-between mt-2">
           <span className="text-caption text-text-muted">{filtered.length} entries</span>
           <select
@@ -126,6 +133,7 @@ export function EntryList({ entries, selectedId, onSelect, onAdd, searchQuery, o
         </div>
       </div>
 
+      {/* Filtered entry cards list */}
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">

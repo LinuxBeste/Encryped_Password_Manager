@@ -1,5 +1,6 @@
 import { ReactNode, useState, useRef } from 'react';
 
+// Tooltip that appears on hover around a child element
 interface TooltipProps {
   content: string;
   children: ReactNode;

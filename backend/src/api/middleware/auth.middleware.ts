@@ -8,6 +8,7 @@ export interface AuthRequest extends Request {
   userEmail?: string;
 }
 
+// Validates JWT from cookie or Authorization header and attaches user info to request
 export function authenticate(req: AuthRequest, res: Response, next: NextFunction): void {
   const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
 

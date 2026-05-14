@@ -1,10 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
 import type { VaultEntry } from '@/types';
 
+// Hook providing full-text search over entries with keyboard navigation
 export function useSearch(entries: VaultEntry[]) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
+  // Filter entries matching query across multiple text fields
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
@@ -18,6 +20,7 @@ export function useSearch(entries: VaultEntry[]) {
     );
   }, [entries, query]);
 
+  // Move selection up/down through results
   const navigate = useCallback(
     (direction: 'up' | 'down') => {
       setSelectedIndex((prev) => {
@@ -28,6 +31,7 @@ export function useSearch(entries: VaultEntry[]) {
     [results.length]
   );
 
+  // Reset search state
   const reset = useCallback(() => {
     setQuery('');
     setSelectedIndex(0);

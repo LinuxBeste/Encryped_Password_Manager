@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { LucideIcon } from 'lucide-react';
 
+// Single item in the context menu
 interface MenuItem {
   id: string;
   label: string;
@@ -17,10 +18,12 @@ interface ContextMenuProps {
   onClose: () => void;
 }
 
+// Right-click context menu with repositioning, Escape dismiss, outside-click close
 export function ContextMenu({ items, position, onClose }: ContextMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [adjustedPos, setAdjustedPos] = useState(position);
 
+  // Repositions menu to stay within viewport bounds
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -35,6 +38,7 @@ export function ContextMenu({ items, position, onClose }: ContextMenuProps) {
     });
   }, [position]);
 
+  // Closes menu on Escape key
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose();
   }, [onClose]);
@@ -44,6 +48,7 @@ export function ContextMenu({ items, position, onClose }: ContextMenuProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Closes menu on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {

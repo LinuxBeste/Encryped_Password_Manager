@@ -8,6 +8,7 @@ interface FolderTreeProps {
   onSelectFolder?: (id: string | null) => void;
 }
 
+// Hierarchical folder tree for organizing entries
 export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps) {
   const folders = useVaultStore((s) => s.folders);
   const entries = useVaultStore((s) => s.entries);
@@ -16,12 +17,15 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState('');
 
+  // Only root-level folders (no parent)
   const rootFolders = folders.filter((f) => !f.parentId);
   const sorted = [...rootFolders].sort((a, b) => a.sortOrder - b.sortOrder);
 
+  // Count entries inside a folder
   const getChildCount = (folderId: string) =>
     entries.filter((e) => e.folderId === folderId).length;
 
+  // Create new folder and reset input
   const handleAdd = async () => {
     const name = newName.trim();
     if (!name) return;
@@ -37,6 +41,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
 
   return (
     <div className="space-y-0.5 px-2">
+      {/* "All entries" root option */}
       <button
         onClick={() => onSelectFolder?.(null)}
         className={`w-full flex items-center gap-2 h-8 px-2 rounded-md text-body transition-colors duration-150 ${
@@ -48,6 +53,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
         <span className="text-caption text-text-faint">{entries.length}</span>
       </button>
 
+      {/* Folder list */}
       {sorted.map((folder) => (
         <div key={folder.id}>
           <button
@@ -65,6 +71,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
         </div>
       ))}
 
+      {/* Inline add-folder form or button */}
       {adding ? (
         <div className="flex items-center gap-1 h-8 px-2">
           <input

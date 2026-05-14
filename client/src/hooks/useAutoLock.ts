@@ -6,10 +6,12 @@ interface UseAutoLockOptions {
   enabled?: boolean;
 }
 
+// Hook that locks the vault after a period of user inactivity
 export function useAutoLock({ timeout, onLock, enabled = true }: UseAutoLockOptions) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const lastActivityRef = useRef(Date.now());
 
+  // Reset the inactivity timer on user activity
   const resetTimer = useCallback(() => {
     lastActivityRef.current = Date.now();
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -20,6 +22,7 @@ export function useAutoLock({ timeout, onLock, enabled = true }: UseAutoLockOpti
     }
   }, [timeout, onLock, enabled]);
 
+  // Listen for user activity events and reset timer
   useEffect(() => {
     resetTimer();
     const events = ['mousedown', 'keydown', 'mousemove', 'touchstart', 'scroll'];

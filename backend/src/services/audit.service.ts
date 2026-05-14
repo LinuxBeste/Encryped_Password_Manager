@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/db';
 import { AuditLog } from '../types';
 
+// Record an audit event in the database
 export function logAuditEvent(
   userId: string,
   action: string,
@@ -18,6 +19,7 @@ export function logAuditEvent(
   ).run(id, userId, action, ipAddress, userAgent, metadata ? JSON.stringify(metadata) : null, now);
 }
 
+// Get paginated audit logs for a user
 export function getAuditLogs(
   userId: string,
   page: number = 1,

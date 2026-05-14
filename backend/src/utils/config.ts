@@ -1,16 +1,20 @@
 import dotenv from 'dotenv';
 
+// Load .env file if present
 dotenv.config();
 
+// Read string env var with fallback
 function envStr(key: string, def: string): string {
   return process.env[key] || def;
 }
 
+// Read integer env var with fallback
 function envInt(key: string, def: number): number {
   const v = process.env[key];
   return v ? parseInt(v, 10) : def;
 }
 
+// Application configuration from environment
 export const config = {
   port: envInt('PORT', 3000),
   nodeEnv: envStr('NODE_ENV', 'development'),

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { FolderTree } from '../folders/FolderTree';
 
+// Sidebar navigation item definition
 type NavItem = {
   id: string;
   label: string;
@@ -12,6 +13,7 @@ type NavItem = {
   count?: number;
 };
 
+// Main navigation items with icons
 const navItems: NavItem[] = [
   { id: 'all', label: 'All Items', icon: Lock },
   { id: 'favorites', label: 'Favorites', icon: Star },
@@ -37,11 +39,13 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
 
   return (
     <div className="w-60 bg-app border-r border-border flex flex-col h-full select-none">
+      {/* App logo and title */}
       <div className="h-12 flex items-center gap-2.5 px-4 border-b border-border">
         <Shield className="w-5 h-5 text-accent" />
         <span className="text-ui font-semibold text-text-primary">VaultLock</span>
       </div>
 
+      {/* Navigation items and folder tree */}
       <nav className="flex-1 overflow-y-auto py-2">
         {navItems.map((item) => (
           <button
@@ -60,6 +64,7 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
           </button>
         ))}
 
+        {/* Folders section toggle */}
         <div className="mt-4 mb-1 px-4">
           <button
             onClick={() => setFoldersOpen(!foldersOpen)}
@@ -73,7 +78,9 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
         {foldersOpen && <FolderTree />}
       </nav>
 
+      {/* Sync status indicator and user section */}
       <div className="border-t border-border p-3 space-y-2">
+        {/* Sync status badge */}
         <div className="flex items-center gap-2 px-2">
           <Circle
             className={`w-2 h-2 ${
@@ -87,6 +94,7 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
           </span>
         </div>
 
+        {/* Settings and lock buttons */}
         <div className="flex items-center gap-1">
           <button
             onClick={onSettings}
@@ -104,6 +112,7 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
           </button>
         </div>
 
+        {/* User avatar and info */}
         <div className="flex items-center gap-2.5 px-2">
           <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
             <span className="text-caption font-medium text-accent">

@@ -16,6 +16,7 @@ import path from 'path';
 
 const testDbPath = path.join(__dirname, '../../../test-data/entry-test.db');
 
+// Seeds a user and default vault for entry tests
 function seedUserAndVault() {
   const db = getDb();
   const uid = uuidv4(), vid = uuidv4();
@@ -25,6 +26,7 @@ function seedUserAndVault() {
   return { uid, vid };
 }
 
+// Builds an entry object with sensible defaults for testing
 function makeEntry(overrides: Record<string, any> = {}) {
   return {
     vault_id: overrides.vid,

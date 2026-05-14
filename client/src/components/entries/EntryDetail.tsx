@@ -14,10 +14,12 @@ interface EntryDetailProps {
   onDelete: () => void;
 }
 
+// Full-screen detail view for a selected vault entry
 export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const domain = entry.url ? extractDomain(entry.url) : null;
 
+  // Copy value to clipboard and show temporary checkmark
   const handleCopy = async (label: string, value: string) => {
     try {
       if (window.electronAPI) {
@@ -34,6 +36,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Header with title and action buttons */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border">
         <h1 className="text-heading font-semibold text-text-primary">{entry.title}</h1>
         <div className="flex items-center gap-1">
@@ -47,7 +50,9 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
         </div>
       </div>
 
+      {/* Entry fields */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+        {/* URL with copy and external link */}
         {entry.url && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">URL</label>
@@ -69,6 +74,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Username with copy */}
         {entry.username && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Username</label>
@@ -84,6 +90,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Password with strength indicator */}
         {entry.type === 'password' && entry.password && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Password</label>
@@ -91,6 +98,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* TOTP two-factor code */}
         {entry.totpSecret && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Two-Factor Code</label>
@@ -98,10 +106,12 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Credit card preview */}
         {entry.type === 'credit-card' && (
           <CardPreview entry={entry} />
         )}
 
+        {/* Notes section */}
         {entry.notes && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Notes</label>
@@ -111,6 +121,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Tags */}
         {entry.tags && entry.tags.length > 0 && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Tags</label>
@@ -122,6 +133,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Custom fields */}
         {entry.customFields && entry.customFields.length > 0 && (
           <div>
             <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1 block">Custom Fields</label>
@@ -133,6 +145,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
           </div>
         )}
 
+        {/* Timestamps */}
         <div className="flex items-center gap-4 pt-2 text-caption text-text-faint border-t border-border">
           <span>Created: {formatDateFull(entry.createdAt)}</span>
           <span>Updated: {formatDateFull(entry.updatedAt)}</span>
@@ -142,6 +155,7 @@ export function EntryDetail({ entry, onEdit, onDelete }: EntryDetailProps) {
   );
 }
 
+// Styled credit card preview from entry fields
 function CardPreview({ entry }: { entry: VaultEntry }) {
   const cardNumber = entry.username || '•••• •••• •••• ••••';
   const expiry = entry.url || '••/••';
@@ -168,6 +182,7 @@ function CardPreview({ entry }: { entry: VaultEntry }) {
   );
 }
 
+// Toggleable hidden custom field row
 function CustomFieldRow({ label, value, hidden }: { label: string; value: string; hidden: boolean }) {
   const [show, setShow] = useState(!hidden);
 
@@ -185,4 +200,3 @@ function CustomFieldRow({ label, value, hidden }: { label: string; value: string
     </div>
   );
 }
-

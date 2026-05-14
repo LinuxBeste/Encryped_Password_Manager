@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError } from 'zod';
 import { ApiResponse } from '../../types';
 
+// Validates request body/query/params against a Zod schema; returns 400 on failure
 export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' = 'body') {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {

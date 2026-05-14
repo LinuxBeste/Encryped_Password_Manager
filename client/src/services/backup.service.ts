@@ -8,6 +8,7 @@ interface BackupData {
   folders: VaultFolder[];
 }
 
+// Serialize vault data to JSON backup string
 export async function exportEncryptedBackup(
   vaultName: string,
   entries: VaultEntry[],
@@ -23,6 +24,7 @@ export async function exportEncryptedBackup(
   return JSON.stringify(backup, null, 2);
 }
 
+// Parse and validate a JSON backup string
 export async function importEncryptedBackup(
   json: string
 ): Promise<BackupData> {
@@ -33,10 +35,12 @@ export async function importEncryptedBackup(
   return data;
 }
 
+// Generate CSV header row for export
 export function generateCsvHeader(): string {
   return 'title,username,password,url,type,notes,tags,favorite,folder';
 }
 
+// Convert entries array to CSV string
 export function convertToCsv(entries: VaultEntry[]): string {
   const lines = [generateCsvHeader()];
   for (const entry of entries) {
@@ -56,6 +60,7 @@ export function convertToCsv(entries: VaultEntry[]): string {
   return lines.join('\n');
 }
 
+// Escape a CSV field value if it contains special characters
 function escapeCsv(value: string): string {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
     return `"${value.replace(/"/g, '""')}"`;
@@ -75,6 +80,7 @@ interface CsvEntry {
   folder: string;
 }
 
+// Parse a single CSV line into fields, handling quoted values
 function parseCsvRow(line: string): string[] {
   const result: string[] = [];
   let current = '';
@@ -100,6 +106,7 @@ function parseCsvRow(line: string): string[] {
   return result;
 }
 
+// Parse CSV string into an array of structured entries
 export function parseCsvImport(csv: string): CsvEntry[] {
   const lines = csv.trim().split('\n');
   if (lines.length < 2) return [];
@@ -119,6 +126,7 @@ export function parseCsvImport(csv: string): CsvEntry[] {
   return results;
 }
 
+// Detect which password manager format a CSV uses based on its header
 export function detectCsvFormat(csv: string): '1password' | 'bitwarden' | 'lastpass' | 'keepass' | 'unknown' {
   const header = csv.trim().split('\n')[0].toLowerCase();
   if (header.includes('url') && header.includes('username') && header.includes('password')) return 'bitwarden';

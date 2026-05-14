@@ -1,5 +1,6 @@
 import { Keyboard } from 'lucide-react';
 
+// Keyboard shortcut definitions grouped by category
 const shortcutGroups = [
   {
     label: 'General',
@@ -27,6 +28,7 @@ const shortcutGroups = [
   },
 ];
 
+// Displays all available keyboard shortcuts grouped by category
 export function ShortcutsTab() {
   return (
     <div className="max-w-lg space-y-5">

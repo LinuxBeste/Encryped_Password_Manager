@@ -10,6 +10,7 @@ interface SetupWizardProps {
   onComplete: (serverUrl: string, email: string, password: string) => void;
 }
 
+// Sample recovery seed words for initial setup
 const RECOVERY_WORDS = [
   'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
   'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
@@ -19,6 +20,7 @@ const RECOVERY_WORDS = [
 
 const STEPS = ['Welcome', 'Server', 'Account', 'Recovery', 'Done'];
 
+// Multi-step first-time setup wizard for vault configuration
 export function SetupWizard({ onComplete }: SetupWizardProps) {
   const [step, setStep] = useState(0);
   const [serverUrl, setServerUrl] = useState('http://localhost:3000/api');
@@ -32,6 +34,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
   const passwordScore = password ? scorePassword(password).score : 0;
   const recoveryPhrase = RECOVERY_WORDS.slice(0, 12).join(' ');
 
+  // Test server connection and update status
   const handleTestConnection = useCallback(async () => {
     setTesting(true);
     const ok = await testConnection(serverUrl);
@@ -39,6 +42,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
     setTesting(false);
   }, [serverUrl]);
 
+  // Determine if current step allows proceeding
   const canNext = () => {
     switch (step) {
       case 0: return true;
@@ -49,6 +53,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
     }
   };
 
+  // Advance or complete the wizard
   const handleNext = () => {
     if (step === STEPS.length - 1) {
       onComplete(serverUrl, email, password);
@@ -60,6 +65,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
   return (
     <div className="flex items-center justify-center h-full bg-app">
       <div className="w-full max-w-lg px-8">
+        {/* Step indicator dots */}
         <div className="flex items-center justify-center mb-6">
           <div className="flex gap-2">
             {STEPS.map((s, i) => (
@@ -69,6 +75,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
         </div>
 
         <div className="bg-panel border border-border rounded-lg p-6">
+          {/* Welcome step */}
           {step === 0 && (
             <div className="text-center space-y-4">
               <Shield className="w-12 h-12 text-accent mx-auto" />
@@ -84,6 +91,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             </div>
           )}
 
+          {/* Server connection step */}
           {step === 1 && (
             <div className="space-y-4">
               <Server className="w-10 h-10 text-accent" />
@@ -102,6 +110,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             </div>
           )}
 
+          {/* Account creation step */}
           {step === 2 && (
             <div className="space-y-4">
               <Mail className="w-10 h-10 text-accent" />
@@ -121,6 +130,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             </div>
           )}
 
+          {/* Recovery phrase step */}
           {step === 3 && (
             <div className="space-y-4">
               <Key className="w-10 h-10 text-accent-amber" />
@@ -141,6 +151,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
             </div>
           )}
 
+          {/* Completion step */}
           {step === 4 && (
             <div className="text-center space-y-4">
               <Check className="w-12 h-12 text-accent-green mx-auto" />
@@ -150,6 +161,7 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
           )}
         </div>
 
+        {/* Navigation buttons */}
         <div className="flex items-center justify-between mt-4">
           <Button
             variant="ghost"

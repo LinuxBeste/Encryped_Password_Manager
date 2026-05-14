@@ -6,6 +6,7 @@ export interface AppError extends Error {
   isOperational?: boolean;
 }
 
+// Global error handler; hides internal details for non-operational errors
 export function errorHandler(
   err: AppError,
   _req: Request,
@@ -25,6 +26,7 @@ export function errorHandler(
   });
 }
 
+// Creates an operational error with a specific HTTP status code
 export function createError(statusCode: number, message: string): AppError {
   const error: AppError = new Error(message);
   error.statusCode = statusCode;

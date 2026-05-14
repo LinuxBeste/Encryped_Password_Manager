@@ -20,6 +20,7 @@ import { initApi, setTokens } from './services/api.service';
 import { KeyRound } from 'lucide-react';
 import type { VaultEntry } from './types';
 
+// Root application component, manages auth, navigation, and entry CRUD
 export default function App() {
   const { isAuthenticated, isLocked, isFirstRun, login, logout, lock, unlock } = useAuthStore();
   const { selectedNav, selectedEntry, panelView, searchQuery, contextMenu, setSelectedNav, selectEntry, setPanelView, setSearchQuery, setContextMenu } = useUIStore();
@@ -32,6 +33,7 @@ export default function App() {
 
   useSettings();
 
+  // Unlock with hardcoded test password, init API and tokens
   const handleUnlock = useCallback(async (password: string) => {
     if (password === 'test') {
       unlock();
@@ -43,11 +45,13 @@ export default function App() {
     return false;
   }, [unlock]);
 
+  // Switch to editor view for adding a new entry
   const handleAddEntry = useCallback(() => {
     selectEntry(null);
     setPanelView('editor');
   }, [selectEntry, setPanelView]);
 
+  // Save a new entry and show its detail view
   const handleSaveEntry = useCallback(async (data: Partial<VaultEntry>) => {
     const saved = await createEntry(data);
     if (saved) {
@@ -56,6 +60,7 @@ export default function App() {
     }
   }, [createEntry, selectEntry, setPanelView]);
 
+  // Cancel editing, return to detail or empty state
   const handleCancelEdit = useCallback(() => {
     if (selectedEntry) {
       setPanelView('detail');
@@ -64,27 +69,32 @@ export default function App() {
     }
   }, [selectedEntry, selectEntry, setPanelView]);
 
+  // Lock the vault
   const handleLock = useCallback(() => {
     lock();
   }, [lock]);
 
+  // Complete first-run setup and login
   const handleSetupComplete = useCallback((serverUrl: string, email: string, _password: string) => {
     initApi(serverUrl);
     login({ id: '1', email, encryptedVaultKey: '', createdAt: Date.now() }, 'token', 'refresh');
   }, [login]);
 
+  // Auto-lock after 5min of inactivity
   useAutoLock({
     timeout: 5 * 60 * 1000,
     onLock: handleLock,
     enabled: isAuthenticated && !isLocked,
   });
 
+  // Load vault data once authenticated and unlocked
   useEffect(() => {
     if (isAuthenticated && !isLocked && !isFirstRun) {
       loadVault();
     }
   }, [isAuthenticated, isLocked, isFirstRun, loadVault]);
 
+  // Filter entries based on the selected navigation category
   const filteredEntries = useMemo(() => {
     switch (selectedNav) {
       case 'favorites':
@@ -104,23 +114,27 @@ export default function App() {
     }
   }, [selectedNav, entries]);
 
+  // Show context menu on right-click
   const handleEntryContextMenu = useCallback((e: React.MouseEvent, entry: VaultEntry) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY, entry });
   }, [setContextMenu]);
 
+  // Copy entry password to system clipboard
   const handleCopyPassword = useCallback(async () => {
     if (selectedEntry?.password && window.electronAPI) {
       await window.electronAPI.clipboard.write(selectedEntry.password);
     }
   }, [selectedEntry]);
 
+  // Copy entry username to system clipboard
   const handleCopyUsername = useCallback(async () => {
     if (selectedEntry?.username && window.electronAPI) {
       await window.electronAPI.clipboard.write(selectedEntry.username);
     }
   }, [selectedEntry]);
 
+  // Show setup wizard for first run
   if (isFirstRun && !isAuthenticated) {
     return (
       <>
@@ -130,6 +144,7 @@ export default function App() {
     );
   }
 
+  // Show unlock screen if not authenticated or vault is locked
   if (!isAuthenticated || isLocked) {
     return (
       <>
@@ -139,6 +154,7 @@ export default function App() {
     );
   }
 
+  // Show settings page
   if (showSettings) {
     return (
       <div className="h-full flex flex-col bg-app">
@@ -150,6 +166,7 @@ export default function App() {
     );
   }
 
+  // Main vault layout: sidebar, entry list, and detail/editor panel
   return (
     <div className="h-full flex flex-col bg-app">
       <TitleBar />

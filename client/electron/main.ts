@@ -9,6 +9,7 @@ let isLocked = false;
 const isDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === undefined;
 const VAULT_STORE_PATH = path.join(app.getPath('userData'), 'vaultlock-store.json');
 
+// Reads persisted settings from disk
 function getSettings(): Record<string, unknown> {
   try {
     if (fs.existsSync(VAULT_STORE_PATH)) {
@@ -18,12 +19,14 @@ function getSettings(): Record<string, unknown> {
   return {};
 }
 
+// Writes settings to disk
 function saveSettings(settings: Record<string, unknown>) {
   try {
     fs.writeFileSync(VAULT_STORE_PATH, JSON.stringify(settings, null, 2));
   } catch { /* ignore */ }
 }
 
+// Creates the main application window
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -45,6 +48,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => { mainWindow = null; });
 
+  // Notifies renderer when window receives focus
   mainWindow.on('focus', () => {
     if (mainWindow) {
       mainWindow.webContents.send('window:focus');
@@ -52,6 +56,7 @@ function createWindow() {
   });
 }
 
+// Creates the system tray icon with context menu
 function createTray() {
   try {
     const iconSize = process.platform === 'darwin' ? 16 : 24;
@@ -68,6 +73,7 @@ function createTray() {
     tray = new Tray(icon);
     tray.setToolTip('VaultLock');
 
+    // Rebuilds tray menu reflecting current lock state
     const updateMenu = () => {
       const contextMenu = Menu.buildFromTemplate([
         {
@@ -104,6 +110,7 @@ function createTray() {
   } catch { /* tray not critical */ }
 }
 
+// Registers all IPC handlers for renderer communication
 function registerIpcHandlers() {
   ipcMain.handle('clipboard:write', (_event, text: string) => {
     clipboard.writeText(text);
@@ -164,6 +171,7 @@ function registerIpcHandlers() {
     return true;
   });
 
+  // Opens save dialog and writes backup file to disk
   ipcMain.handle('backup:export', async (_event, content: string, defaultName: string) => {
     const { dialog } = require('electron');
     const result = await dialog.showSaveDialog(mainWindow!, {
@@ -177,6 +185,7 @@ function registerIpcHandlers() {
     return false;
   });
 
+  // Opens open dialog and reads backup file from disk
   ipcMain.handle('backup:import', async () => {
     const { dialog } = require('electron');
     const result = await dialog.showOpenDialog(mainWindow!, {
@@ -195,6 +204,7 @@ app.whenReady().then(() => {
   createWindow();
   createTray();
 
+  // Locks vault when system suspends
   powerMonitor.on('suspend', () => {
     if (mainWindow) {
       mainWindow.webContents.send('vault:lock');
@@ -202,6 +212,7 @@ app.whenReady().then(() => {
     }
   });
 
+  // Locks vault when screen is locked
   powerMonitor.on('lock-screen', () => {
     if (mainWindow) {
       mainWindow.webContents.send('vault:lock');

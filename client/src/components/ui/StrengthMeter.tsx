@@ -1,3 +1,4 @@
+// Segmented password strength indicator with labels per level
 interface StrengthMeterProps {
   score: number;
 }

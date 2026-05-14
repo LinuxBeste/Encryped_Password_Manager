@@ -9,6 +9,7 @@ interface FolderContextMenuProps {
   onAddSubfolder: () => void;
 }
 
+// Right-click context menu for folder actions
 export function FolderContextMenu({ position, onClose, onRename, onDelete, onAddSubfolder }: FolderContextMenuProps) {
   return (
     <ContextMenu

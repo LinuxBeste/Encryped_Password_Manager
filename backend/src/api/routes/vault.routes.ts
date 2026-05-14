@@ -10,11 +10,13 @@ import { SyncRequest } from '../../types';
 
 const router = Router();
 
+// Schema: last sync timestamp + IDs deleted since last sync
 const syncSchema = z.object({
   lastSyncAt: z.number(),
   deletedIds: z.array(z.string().uuid()).optional().default([]),
 });
 
+// Get full vault data (vault + entries + folders) for the user
 router.get('/', authenticate, rateLimitVault, (req: AuthRequest, res: Response) => {
   const result = getVault(req.userId!);
 
@@ -23,6 +25,7 @@ router.get('/', authenticate, rateLimitVault, (req: AuthRequest, res: Response) 
   res.json(result);
 });
 
+// Sync entries and folders modified since the given timestamp
 router.post(
   '/sync',
   authenticate,
@@ -41,6 +44,7 @@ router.post(
   },
 );
 
+// Export all vault data including encrypted entry bodies
 router.get('/export', authenticate, rateLimitVault, (req: AuthRequest, res: Response) => {
   const result = exportVault(req.userId!);
 

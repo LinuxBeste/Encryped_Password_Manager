@@ -1,6 +1,7 @@
 import { getDb } from '../db/db';
 import { Vault, ApiResponse } from '../types';
 
+// Get the user's vault and non-deleted entry summaries
 export function getVault(userId: string): ApiResponse<{ vault: Vault | null; entries: any[] }> {
   const db = getDb();
   const vault = db.prepare('SELECT * FROM vaults WHERE user_id = ?').get(userId) as
@@ -16,6 +17,7 @@ export function getVault(userId: string): ApiResponse<{ vault: Vault | null; ent
   return { success: true, data: { vault: vault || null, entries } };
 }
 
+// Export all user data including vault, entries, and folders
 export function exportVault(userId: string): ApiResponse {
   const db = getDb();
   const vault = db.prepare('SELECT * FROM vaults WHERE user_id = ?').get(userId);

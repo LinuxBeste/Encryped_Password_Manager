@@ -4,6 +4,7 @@ export interface TOTPConfig {
   digits: number;
 }
 
+// Compute HMAC-SHA1 over given key and data
 async function hmacSHA1(key: ArrayBuffer, data: ArrayBuffer): Promise<ArrayBuffer> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
@@ -15,6 +16,7 @@ async function hmacSHA1(key: ArrayBuffer, data: ArrayBuffer): Promise<ArrayBuffe
   return crypto.subtle.sign('HMAC', cryptoKey, data);
 }
 
+// Generate a time-based one-time password (TOTP) code
 export async function generateTOTP(secret: string, period = 30, digits = 6): Promise<{ code: string; remaining: number }> {
   const epoch = Math.floor(Date.now() / 1000);
   const counter = Math.floor(epoch / period);
@@ -41,11 +43,13 @@ export async function generateTOTP(secret: string, period = 30, digits = 6): Pro
   return { code, remaining };
 }
 
+// Generate an otpauth:// URI for QR code scanning
 export function generateTOTPUri(secret: string, issuer: string, email: string): string {
   const encoded = encodeURIComponent(issuer) + ':' + encodeURIComponent(email);
   return `otpauth://totp/${encoded}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
 }
 
+// Format a 6-digit TOTP code as "XXX XXX"
 export function formatTOTPCode(code: string): string {
   if (code.length !== 6) return code;
   return code.slice(0, 3) + ' ' + code.slice(3);

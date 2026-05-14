@@ -4,12 +4,14 @@ import { Loader2 } from 'lucide-react';
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
+// Reusable button component props
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
 }
 
+// Visual styles per variant
 const variantStyles: Record<Variant, string> = {
   primary: 'bg-accent text-white hover:brightness-110',
   secondary: 'bg-surface border border-border text-text-primary hover:bg-hover',
@@ -17,6 +19,7 @@ const variantStyles: Record<Variant, string> = {
   danger: 'bg-accent-red text-white hover:brightness-110',
 };
 
+// Height and padding per size
 const sizeStyles: Record<Size, string> = {
   sm: 'h-8 px-3 text-caption',
   md: 'h-9 px-4 text-ui',

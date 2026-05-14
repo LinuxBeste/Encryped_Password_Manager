@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../../../utils/config';
 import { Response, NextFunction } from 'express';
 
+// Creates mock request with optional JWT token in cookie and header
 function mockReqRes(token?: string): { req: AuthRequest; res: Response; next: NextFunction } {
   const req = {
     cookies: token ? { token } : {},

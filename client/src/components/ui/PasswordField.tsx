@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, Copy, Check } from 'lucide-react';
 import { StrengthMeter } from './StrengthMeter';
 
+// Password input with visibility toggle, copy button, and optional strength meter
 interface PasswordFieldProps {
   value: string;
   onChange?: (value: string) => void;
@@ -15,6 +16,7 @@ export function PasswordField({ value, onChange, readonly, showStrength, strengt
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Copies password to clipboard and shows temporary checkmark
   const handleCopy = () => {
     navigator.clipboard.writeText(value).then(() => {
       setCopied(true);

@@ -18,28 +18,34 @@ import { config } from '../../utils/config';
 
 const router = Router();
 
+// Schema: email + masterPassword (8-256 chars)
 const registerSchema = z.object({
   email: z.string().email(),
   masterPassword: z.string().min(8).max(256),
 });
 
+// Schema: email + masterPassword
 const loginSchema = z.object({
   email: z.string().email(),
   masterPassword: z.string(),
 });
 
+// Schema: refresh token string
 const refreshSchema = z.object({
   refreshToken: z.string(),
 });
 
+// Schema: refresh token for logout
 const logoutSchema = z.object({
   refreshToken: z.string(),
 });
 
+// Schema: master password confirmation for account deletion
 const deleteAccountSchema = z.object({
   masterPassword: z.string(),
 });
 
+// Register a new user account
 router.post('/register', rateLimitAuth, validate(registerSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
   const result = await registerUser(email, masterPassword);
@@ -56,6 +62,7 @@ router.post('/register', rateLimitAuth, validate(registerSchema), async (req, re
   res.status(result.success ? 201 : 409).json(result);
 });
 
+// Login with email and master password; sets JWT cookie on success
 router.post('/login', rateLimitAuth, validate(loginSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
   const result = await loginUser(email, masterPassword);
@@ -85,6 +92,7 @@ router.post('/login', rateLimitAuth, validate(loginSchema), async (req, res: Res
   res.json(result);
 });
 
+// Refresh access token using a valid refresh token
 router.post('/refresh', rateLimitAuth, validate(refreshSchema), (req, res: Response) => {
   const { refreshToken } = req.body;
   const result = refreshAccessToken(refreshToken);
@@ -102,6 +110,7 @@ router.post('/refresh', rateLimitAuth, validate(refreshSchema), (req, res: Respo
   res.json(result);
 });
 
+// Logout and revoke the refresh token
 router.post('/logout', rateLimitAuth, validate(logoutSchema), (req, res: Response) => {
   const { refreshToken } = req.body;
   const result = logoutUser(refreshToken);
@@ -109,6 +118,7 @@ router.post('/logout', rateLimitAuth, validate(logoutSchema), (req, res: Respons
   res.json(result);
 });
 
+// Delete user account after verifying master password
 router.delete(
   '/account',
   authenticate,
@@ -131,6 +141,7 @@ router.delete(
   },
 );
 
+// Generate TOTP secret and return QR code for authenticator app setup
 router.post('/totp/setup', authenticate, rateLimitAuth, async (req: AuthRequest, res: Response) => {
   const secret = authenticator.generateSecret();
   const serviceName = 'VaultLock';
@@ -146,6 +157,7 @@ router.post('/totp/setup', authenticate, rateLimitAuth, async (req: AuthRequest,
   res.json({ success: true, data: { secret, qrCode, otpauth } });
 });
 
+// Verify a 6-digit TOTP code against the user's stored secret
 router.post(
   '/totp/verify',
   authenticate,
@@ -181,6 +193,7 @@ router.post(
   },
 );
 
+// Remove TOTP secret from the user's account
 router.delete('/totp', authenticate, rateLimitAuth, async (req: AuthRequest, res: Response) => {
   const db = getDb();
   db.prepare('UPDATE users SET totp_secret = NULL WHERE id = ?').run(req.userId);

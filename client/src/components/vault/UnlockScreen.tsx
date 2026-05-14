@@ -11,12 +11,14 @@ interface UnlockScreenProps {
   maxAttempts?: number;
 }
 
+// Full-screen vault unlock with password, biometrics, and lockout handling
 export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAttempts = 0, maxAttempts = 5 }: UnlockScreenProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lockedOut = failedAttempts >= maxAttempts;
 
+  // Attempt to unlock vault with entered password
   const handleUnlock = useCallback(async () => {
     if (!password || lockedOut) return;
     setLoading(true);
@@ -33,15 +35,18 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
     }
   }, [password, lockedOut, onUnlock]);
 
+  // Trigger unlock on Enter key
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleUnlock();
   };
 
   return (
     <div className="flex items-center justify-center h-full bg-app relative overflow-hidden">
+      {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-radial from-accent/5 to-transparent animate-pulse-glow" />
 
       <div className="relative z-10 w-full max-w-sm px-6">
+        {/* App branding */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-4">
             <Shield className="w-8 h-8 text-accent" />
@@ -51,6 +56,7 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
         </div>
 
         <div className="space-y-4">
+          {/* Lockout warning */}
           {lockedOut && (
             <div className="flex items-start gap-2.5 p-3 rounded-md bg-accent-red/10 border border-accent-red/20">
               <AlertCircle className="w-4 h-4 text-accent-red shrink-0 mt-0.5" />
@@ -58,6 +64,7 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
             </div>
           )}
 
+          {/* Password input */}
           <Input
             type="password"
             value={password}
@@ -69,6 +76,7 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
             disabled={lockedOut}
           />
 
+          {/* Unlock button */}
           <Button
             variant="primary"
             size="lg"
@@ -81,6 +89,7 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
             Unlock
           </Button>
 
+          {/* Biometric unlock option */}
           {biometricAvailable && (
             <Button variant="secondary" size="lg" className="w-full">
               <Fingerprint className="w-4 h-4" />
@@ -88,12 +97,14 @@ export function UnlockScreen({ onUnlock, onSetup, biometricAvailable, failedAtte
             </Button>
           )}
 
+          {/* Failed attempts counter */}
           {failedAttempts > 0 && !lockedOut && (
             <p className="text-center text-caption text-accent-amber">
               {failedAttempts} of {maxAttempts} failed attempts
             </p>
           )}
 
+          {/* First-time setup link */}
           <div className="text-center pt-4">
             <p className="text-caption text-text-muted">First time using VaultLock?</p>
             <button

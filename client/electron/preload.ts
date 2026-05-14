@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
+// Exposes a safe API to the renderer via contextBridge
 contextBridge.exposeInMainWorld('electronAPI', {
   clipboard: {
     write: (text: string) => ipcRenderer.invoke('clipboard:write', text),

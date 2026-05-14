@@ -1,5 +1,6 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 
+// Reusable text input with label, hint, and error state
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   hint?: string;

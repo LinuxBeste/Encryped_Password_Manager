@@ -19,6 +19,7 @@ interface UIState {
   setContextMenu: (menu: { x: number; y: number; entry: VaultEntry } | null) => void;
 }
 
+// UI state store for navigation, panel view, search, and context menu
 export const useUIStore = create<UIState>((set) => ({
   selectedNav: 'all',
   selectedEntryId: null,
@@ -28,7 +29,9 @@ export const useUIStore = create<UIState>((set) => ({
   globalSearchOpen: false,
   contextMenu: null,
 
+  // Set nav category and deselect entry
   setSelectedNav: (id) => set({ selectedNav: id, selectedEntry: null, selectedEntryId: null }),
+  // Select an entry and switch to detail view
   selectEntry: (entry) =>
     set({
       selectedEntry: entry,

@@ -1,3 +1,4 @@
+// Tests for argon2id hashing, AES-256-GCM encryption, and salt generation
 import { hashPassword, verifyPassword, generateSalt, encryptAes256Gcm, decryptAes256Gcm } from '../crypto.service';
 
 describe('CryptoService — argon2id hashing', () => {

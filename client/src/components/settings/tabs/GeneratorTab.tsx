@@ -3,6 +3,7 @@ import { Slider } from '@/components/ui/Slider';
 import { Toggle } from '@/components/ui/Toggle';
 import { Select } from '@/components/ui/Select';
 
+// Password generator settings: length, character sets, and passphrase options
 export function GeneratorTab() {
   const { settings, updateGenerator } = useSettingsStore();
 

@@ -7,11 +7,13 @@ interface TOTPDisplayProps {
   period?: number;
 }
 
+// Live TOTP code display with countdown ring animation
 export function TOTPDisplay({ secret, period = 30 }: TOTPDisplayProps) {
   const [code, setCode] = useState('');
   const [remaining, setRemaining] = useState(period);
   const [copied, setCopied] = useState(false);
 
+  // Regenerate TOTP code from secret
   const updateCode = useCallback(async () => {
     try {
       const result = await generateTOTP(secret, period);
@@ -23,12 +25,14 @@ export function TOTPDisplay({ secret, period = 30 }: TOTPDisplayProps) {
     }
   }, [secret, period]);
 
+  // Update code every second
   useEffect(() => {
     updateCode();
     const timer = setInterval(updateCode, 1000);
     return () => clearInterval(timer);
   }, [updateCode]);
 
+  // Copy current code to clipboard
   const handleCopy = async () => {
     try {
       if (window.electronAPI) {
@@ -45,10 +49,12 @@ export function TOTPDisplay({ secret, period = 30 }: TOTPDisplayProps) {
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - remaining / period);
 
+  // Ring color changes based on time remaining
   const ringColor = remaining > 10 ? 'var(--accent-green)' : remaining > 5 ? 'var(--accent-amber)' : 'var(--accent-red)';
 
   return (
     <div className="flex items-center gap-4">
+      {/* Animated countdown ring with code in center */}
       <div className="relative w-20 h-20">
         <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
           <circle cx="40" cy="40" r={radius} fill="none" stroke="var(--bg-surface)" strokeWidth="4" />
@@ -67,6 +73,7 @@ export function TOTPDisplay({ secret, period = 30 }: TOTPDisplayProps) {
           <span className="text-heading font-mono font-semibold text-text-primary">{formatTOTPCode(code)}</span>
         </div>
       </div>
+      {/* Copy button */}
       <button
         onClick={handleCopy}
         className="p-2 rounded-md text-text-muted hover:text-text-primary hover:bg-hover transition-colors duration-150"

@@ -2,6 +2,7 @@ import { LucideIcon } from 'lucide-react';
 import { Button } from './Button';
 import { ReactNode } from 'react';
 
+// Empty state placeholder with icon, text, and optional action button
 interface EmptyStateProps {
   icon: LucideIcon;
   title: string;

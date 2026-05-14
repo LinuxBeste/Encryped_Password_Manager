@@ -16,6 +16,7 @@ interface GeneratorOptions {
   includeNumber: boolean;
 }
 
+// Hook for generating passwords/passphrases with configurable options and history
 export function usePasswordGenerator(defaultOptions?: Partial<GeneratorOptions>) {
   const [options, setOptions] = useState<GeneratorOptions>({
     length: 20,
@@ -35,6 +36,7 @@ export function usePasswordGenerator(defaultOptions?: Partial<GeneratorOptions>)
   const [current, setCurrent] = useState<GeneratedPassword | null>(null);
   const [history, setHistory] = useState<GeneratedPassword[]>([]);
 
+  // Generate a password or passphrase based on current options
   const generate = useCallback(() => {
     let result: GeneratedPassword;
     if (options.useWords) {
@@ -58,6 +60,7 @@ export function usePasswordGenerator(defaultOptions?: Partial<GeneratorOptions>)
     return result;
   }, [options]);
 
+  // Update a single generator option
   const updateOption = useCallback(<K extends keyof GeneratorOptions>(
     key: K,
     value: GeneratorOptions[K]

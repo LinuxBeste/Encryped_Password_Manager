@@ -1,6 +1,7 @@
 import { getApi } from './api.service';
 import type { VaultEntry, VaultFolder, SyncStatus, SyncEvent } from '@/types';
 
+// Singleton service managing vault sync state and API communication
 export class SyncService {
   private status: SyncStatus = {
     lastSync: null,
@@ -11,10 +12,12 @@ export class SyncService {
 
   private listeners: Array<(status: SyncStatus) => void> = [];
 
+  // Return current sync status snapshot
   getStatus(): SyncStatus {
     return this.status;
   }
 
+  // Subscribe to status changes, returns unsubscribe function
   subscribe(callback: (status: SyncStatus) => void): () => void {
     this.listeners.push(callback);
     return () => {
@@ -22,10 +25,12 @@ export class SyncService {
     };
   }
 
+  // Notify all listeners with current status
   private notify() {
     this.listeners.forEach((l) => l({ ...this.status }));
   }
 
+  // Add event to the history log, keep last 10
   private addEvent(type: SyncEvent['type'], message: string) {
     this.status.events.unshift({ timestamp: Date.now(), type, message });
     if (this.status.events.length > 10) {
@@ -33,6 +38,7 @@ export class SyncService {
     }
   }
 
+  // Sync vault data with the server
   async syncVault(userId: string): Promise<boolean> {
     this.status.status = 'syncing';
     this.addEvent('sync-start', 'Sync started');
@@ -61,6 +67,7 @@ export class SyncService {
     }
   }
 
+  // Resolve a sync conflict for a specific entry
   async resolveConflict(
     entryId: string,
     resolution: 'server-wins' | 'client-wins'
@@ -76,6 +83,7 @@ export class SyncService {
     }
   }
 
+  // Reset sync status to idle
   resetStatus() {
     this.status = {
       lastSync: null,

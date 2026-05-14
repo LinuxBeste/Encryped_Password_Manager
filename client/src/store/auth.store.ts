@@ -17,6 +17,7 @@ interface AuthState {
   setUser: (user: User) => void;
 }
 
+// Persisted auth store managing login, lock, and first-run state
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -27,6 +28,7 @@ export const useAuthStore = create<AuthState>()(
       sessionToken: null,
       refreshToken: null,
 
+      // Set authenticated state with user and tokens
       login: (user, sessionToken, refreshToken) =>
         set({
           isAuthenticated: true,
@@ -37,6 +39,7 @@ export const useAuthStore = create<AuthState>()(
           refreshToken,
         }),
 
+      // Clear all auth state on logout
       logout: () =>
         set({
           isAuthenticated: false,
@@ -46,6 +49,7 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
         }),
 
+      // Toggle locked state
       lock: () => set({ isLocked: true }),
       unlock: () => set({ isLocked: false }),
       setFirstRun: (val) => set({ isFirstRun: val }),

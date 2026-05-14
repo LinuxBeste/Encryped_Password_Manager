@@ -1,5 +1,6 @@
 import { Loader2 } from 'lucide-react';
 
+// Animated loading spinner
 interface SpinnerProps {
   size?: number;
   className?: string;

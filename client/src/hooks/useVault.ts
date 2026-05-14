@@ -4,10 +4,12 @@ import { useAuthStore } from '@/store/auth.store';
 import { getApi } from '@/services/api.service';
 import type { VaultEntry, VaultFolder } from '@/types';
 
+// Hook providing vault CRUD operations with API sync and local fallback
 export function useVault() {
   const { entries, folders, vaultName, vaultId, setVault, addEntry, updateEntry, removeEntry, toggleFavorite, clearVault } = useVaultStore();
   const user = useAuthStore((s) => s.user);
 
+  // Fetch vault data from API and populate store
   const loadVault = useCallback(async () => {
     if (!user) return;
     try {
@@ -20,6 +22,7 @@ export function useVault() {
     } catch { /* error handled by interceptor */ }
   }, [user, setVault]);
 
+  // Create entry via API, fall back to local creation on failure
   const createEntry = useCallback(async (entry: Partial<VaultEntry>) => {
     try {
       const api = getApi();
@@ -51,6 +54,7 @@ export function useVault() {
     return localEntry;
   }, [addEntry, vaultId]);
 
+  // Update entry via API and local store
   const editEntry = useCallback(async (id: string, updates: Partial<VaultEntry>) => {
     try {
       const api = getApi();
@@ -61,6 +65,7 @@ export function useVault() {
     } catch { /* ignore */ }
   }, [updateEntry]);
 
+  // Delete entry via API and local store
   const deleteEntry = useCallback(async (id: string) => {
     try {
       const api = getApi();
@@ -71,6 +76,7 @@ export function useVault() {
     } catch { /* ignore */ }
   }, [removeEntry]);
 
+  // Toggle favorite locally, then sync to API
   const favoriteEntry = useCallback(async (id: string) => {
     toggleFavorite(id);
     try {
@@ -81,6 +87,7 @@ export function useVault() {
     }
   }, [toggleFavorite]);
 
+  // Create folder via API with local fallback
   const createFolder = useCallback(async (name: string) => {
     try {
       const api = getApi();

@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 
+// Dangerous actions: recovery key export, settings reset, account deletion
 export function DangerZoneTab() {
   const [confirmAction, setConfirmAction] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
   const [deleteText, setDeleteText] = useState('');
 
+  // Starts a 3-second countdown before a destructive action can proceed
   const startCountdown = useCallback((action: string) => {
     setConfirmAction(action);
     setCountdown(3);

@@ -4,6 +4,7 @@ interface LockOverlayProps {
   onUnlock: () => void;
 }
 
+// Blurred overlay shown when the vault is locked, with an unlock button
 export function LockOverlay({ onUnlock }: LockOverlayProps) {
   return (
     <div className="absolute inset-0 z-40 backdrop-blur-xl bg-app/80 flex items-center justify-center animate-fade-in">

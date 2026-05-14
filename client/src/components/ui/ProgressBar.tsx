@@ -1,3 +1,4 @@
+// Horizontal progress bar with configurable value, max, and color
 interface ProgressBarProps {
   value: number;
   max?: number;

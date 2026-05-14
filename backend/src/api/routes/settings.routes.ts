@@ -7,8 +7,10 @@ import { getDb } from '../../db/db';
 
 const router = Router();
 
+// Schema: arbitrary key-value string pairs
 const updateSettingsSchema = z.record(z.string(), z.string());
 
+// Get all settings for the authenticated user as a key-value map
 router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const db = getDb();
   const settings = db
@@ -23,6 +25,7 @@ router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response
   res.json({ success: true, data: settingsMap });
 });
 
+// Upsert multiple settings at once for the authenticated user
 router.put(
   '/',
   authenticate,

@@ -7,12 +7,14 @@ import { testConnection } from '@/services/api.service';
 import { syncService } from '@/services/sync.service';
 import { Badge } from '@/components/ui/Badge';
 
+// Sync settings: server URL, test connection, interval, conflict resolution, status
 export function SyncTab() {
   const { settings, updateSync } = useSettingsStore();
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<boolean | null>(null);
   const syncStatus = syncService.getStatus();
 
+  // Tests connection to the configured sync server
   const handleTest = async () => {
     setTesting(true);
     setTestResult(await testConnection(settings.sync.serverUrl));

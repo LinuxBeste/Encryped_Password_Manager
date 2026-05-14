@@ -2,6 +2,7 @@ import { rateLimitAuth, rateLimitVault, rateLimitDefault, getRateLimitBuckets } 
 import { Request, Response, NextFunction } from 'express';
 import { jest } from '@jest/globals';
 
+// Creates mock request/response with configurable IP and userId
 function mockReqRes(overrides: Partial<Request> = {}): { req: Request; res: Response; next: NextFunction } {
   const req = {
     ip: '127.0.0.1',
@@ -28,7 +29,6 @@ function mockReqRes(overrides: Partial<Request> = {}): { req: Request; res: Resp
 }
 
 beforeEach(() => {
-  // Clear rate limit buckets
   getRateLimitBuckets().clear();
 });
 

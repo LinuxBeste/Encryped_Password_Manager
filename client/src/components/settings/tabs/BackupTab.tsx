@@ -7,11 +7,13 @@ import { Slider } from '@/components/ui/Slider';
 import { Modal } from '@/components/ui/Modal';
 import { exportEncryptedBackup, convertToCsv } from '@/services/backup.service';
 
+// Backup settings: encrypted export, CSV export, import, auto-backup schedule
 export function BackupTab() {
   const { settings, updateBackup } = useSettingsStore();
   const { vaultName: name, entries, folders } = useVaultStore();
   const [showCsvWarning, setShowCsvWarning] = useState(false);
 
+  // Exports vault as encrypted JSON via Electron save dialog
   const handleExportEncrypted = async () => {
     const json = await exportEncryptedBackup(name, entries, folders);
     if (window.electronAPI) {
@@ -19,6 +21,7 @@ export function BackupTab() {
     }
   };
 
+  // Exports entries as plaintext CSV (triggers browser download)
   const handleExportCsv = async () => {
     const csv = convertToCsv(entries);
     const blob = new Blob([csv], { type: 'text/csv' });

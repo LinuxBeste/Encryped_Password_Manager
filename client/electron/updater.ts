@@ -1,6 +1,7 @@
 import { autoUpdater } from 'electron-updater';
 import { BrowserWindow } from 'electron';
 
+// Configures auto-updater events to forward progress to the renderer
 export function setupAutoUpdater(mainWindow: BrowserWindow) {
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
@@ -34,10 +35,12 @@ export function setupAutoUpdater(mainWindow: BrowserWindow) {
   });
 }
 
+// Starts downloading an available update
 export function downloadUpdate() {
   autoUpdater.downloadUpdate();
 }
 
+// Installs the downloaded update and restarts the app
 export function installUpdate() {
   autoUpdater.quitAndInstall();
 }

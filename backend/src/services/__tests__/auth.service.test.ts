@@ -13,6 +13,7 @@ import crypto from 'crypto';
 
 const testDbPath = path.join(__dirname, '../../../test-data/auth-test.db');
 
+// Creates a fresh test database, cleaning up any previous files
 function setupDb() {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

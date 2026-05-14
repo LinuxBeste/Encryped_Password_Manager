@@ -2,6 +2,7 @@ import { useSettingsStore } from '@/store/settings.store';
 import { Select } from '@/components/ui/Select';
 import { Toggle } from '@/components/ui/Toggle';
 
+// Available accent color options
 const accentColors = [
   { value: 'blue', label: 'Blue', color: '#388bfd' },
   { value: 'purple', label: 'Purple', color: '#bc8cff' },
@@ -11,6 +12,7 @@ const accentColors = [
   { value: 'red', label: 'Red', color: '#f85149' },
 ];
 
+// Appearance settings: theme, accent color, font size, display toggles
 export function AppearanceTab() {
   const { settings, updateUI } = useSettingsStore();
 

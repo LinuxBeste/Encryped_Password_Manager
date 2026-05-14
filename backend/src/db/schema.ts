@@ -1,5 +1,7 @@
+// Latest schema version number
 export const SCHEMA_VERSION = 1;
 
+// Schema migrations keyed by version number
 export const migrations: Record<number, string[]> = {
   1: [
     `CREATE TABLE IF NOT EXISTS schema_version (

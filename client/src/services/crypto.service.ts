@@ -3,18 +3,22 @@ const SALT_LENGTH = 32;
 const PBKDF2_ITERATIONS = 600000;
 const KEY_LENGTH = 256;
 
+// Convert ArrayBuffer to base64 string
 function bufferToBase64(buf: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
 
+// Convert base64 string to ArrayBuffer
 function base64ToBuffer(str: string): ArrayBuffer {
   return Uint8Array.from(atob(str), (c) => c.charCodeAt(0)).buffer;
 }
 
+// Generate a cryptographically random salt
 export function generateSalt(): Uint8Array {
   return crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
 }
 
+// Derive an AES-GCM key from password + email using PBKDF2
 export async function deriveKey(
   masterPassword: string,
   email: string,
@@ -50,6 +54,7 @@ export interface EncryptedData {
   salt: string;
 }
 
+// Encrypt plaintext with AES-GCM using the derived key
 export async function encrypt(
   plaintext: string,
   key: CryptoKey,
@@ -69,6 +74,7 @@ export async function encrypt(
   };
 }
 
+// Decrypt ciphertext by re-deriving key from password and email
 export async function decrypt(
   data: EncryptedData,
   masterPassword: string,
@@ -86,11 +92,13 @@ export async function decrypt(
   return new TextDecoder().decode(decrypted);
 }
 
+// Generate a random 32-byte encryption key as base64
 export function generateEncryptionKey(): string {
   const key = crypto.getRandomValues(new Uint8Array(32));
   return bufferToBase64(key.buffer);
 }
 
+// Clear sensitive key data from memory
 export function zeroKey(key: CryptoKey | null): void {
   if (key) {
     (key as unknown as Record<string, unknown>).algorithm = {};

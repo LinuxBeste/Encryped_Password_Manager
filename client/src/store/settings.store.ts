@@ -60,10 +60,12 @@ interface SettingsState {
   resetSettings: () => void;
 }
 
+// Settings store with persistence via electronAPI and per-category updaters
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   settings: defaultSettings,
   loaded: false,
 
+  // Load persisted settings from electron store
   loadSettings: async () => {
     try {
       if (window.electronAPI) {
@@ -79,6 +81,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
+  // Persist current settings to electron store
   saveSettings: async () => {
     const { settings } = get();
     try {

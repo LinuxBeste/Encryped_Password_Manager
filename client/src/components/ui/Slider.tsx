@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 
+// Range slider with label showing current value
 interface SliderProps {
   value: number;
   onChange: (value: number) => void;

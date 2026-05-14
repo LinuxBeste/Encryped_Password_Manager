@@ -5,6 +5,7 @@ import fs from 'fs';
 let tray: Tray | null = null;
 let lockState = false;
 
+// Creates system tray icon with dynamic lock/unlock context menu
 export function createTrayIcon(getLocked: () => boolean, onLock: () => void) {
   const iconPath = path.join(__dirname, '../../assets/tray-icon.png');
   let icon: Electron.NativeImage;
@@ -34,6 +35,7 @@ export function createTrayIcon(getLocked: () => boolean, onLock: () => void) {
   return tray;
 }
 
+// Rebuilds tray context menu with current lock state
 export function updateMenu(getLocked: () => boolean, onLock: () => void) {
   const locked = getLocked();
   const menu = Menu.buildFromTemplate([
@@ -54,6 +56,7 @@ export function updateMenu(getLocked: () => boolean, onLock: () => void) {
   tray?.setContextMenu(menu);
 }
 
+// Destroys the tray icon
 export function destroyTray() {
   if (tray) { tray.destroy(); tray = null; }
 }

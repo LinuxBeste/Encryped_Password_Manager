@@ -1,3 +1,4 @@
+// A single password vault entry
 export interface VaultEntry {
   id: string;
   vaultId: string;
@@ -17,6 +18,7 @@ export interface VaultEntry {
   deletedAt: number | null;
 }
 
+// Supported entry type categories
 export type EntryType =
   | 'password'
   | 'note'
@@ -24,6 +26,7 @@ export type EntryType =
   | 'identity'
   | 'ssh-key';
 
+// A custom field within a vault entry
 export interface CustomField {
   id: string;
   label: string;
@@ -31,6 +34,7 @@ export interface CustomField {
   hidden: boolean;
 }
 
+// A folder/group for organizing entries
 export interface VaultFolder {
   id: string;
   name: string;
@@ -39,6 +43,7 @@ export interface VaultFolder {
   entryCount: number;
 }
 
+// Full vault data from the server
 export interface VaultData {
   id: string;
   name: string;
@@ -46,6 +51,7 @@ export interface VaultData {
   folders: VaultFolder[];
 }
 
+// Authenticated user account
 export interface User {
   id: string;
   email: string;
@@ -53,6 +59,7 @@ export interface User {
   createdAt: number;
 }
 
+// Authentication and lock screen state
 export interface AuthState {
   isAuthenticated: boolean;
   isLocked: boolean;
@@ -62,6 +69,7 @@ export interface AuthState {
   refreshToken: string | null;
 }
 
+// UI appearance and behavior preferences
 export interface UISettings {
   theme: 'system' | 'dark' | 'light';
   accentColor: AccentColor;
@@ -76,8 +84,10 @@ export interface UISettings {
   minimizeToTray: boolean;
 }
 
+// Available accent color options
 export type AccentColor = 'blue' | 'purple' | 'green' | 'teal' | 'amber' | 'red';
 
+// Security-related settings
 export interface SecuritySettings {
   autoLockTimeout: number;
   autoLockOnSleep: boolean;
@@ -86,6 +96,7 @@ export interface SecuritySettings {
   failedAttemptsBeforeLockout: number;
 }
 
+// Password generator configuration
 export interface GeneratorSettings {
   defaultLength: number;
   useUppercase: boolean;
@@ -100,18 +111,21 @@ export interface GeneratorSettings {
   wordCount: number;
 }
 
+// Server sync configuration
 export interface SyncSettings {
   serverUrl: string;
   syncInterval: number;
   conflictResolution: 'server-wins' | 'client-wins' | 'ask';
 }
 
+// Backup schedule and location settings
 export interface BackupSettings {
   autoBackup: 'never' | 'daily' | 'weekly' | 'monthly';
   backupLocation: string;
   keepLastN: number;
 }
 
+// All settings grouped by category
 export interface Settings {
   ui: UISettings;
   security: SecuritySettings;
@@ -120,6 +134,7 @@ export interface Settings {
   backup: BackupSettings;
 }
 
+// Current sync status and event history
 export interface SyncStatus {
   lastSync: number | null;
   status: 'idle' | 'syncing' | 'success' | 'error';
@@ -127,18 +142,21 @@ export interface SyncStatus {
   events: SyncEvent[];
 }
 
+// A single sync event log entry
 export interface SyncEvent {
   timestamp: number;
   type: 'sync-start' | 'sync-success' | 'sync-error' | 'conflict';
   message: string;
 }
 
+// Generic API response wrapper
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
 }
 
+// Password strength evaluation result
 export interface PasswordScore {
   score: number;
   label: string;
@@ -146,17 +164,20 @@ export interface PasswordScore {
   crackTime: string;
 }
 
+// A generated password with its strength score
 export interface GeneratedPassword {
   password: string;
   score: PasswordScore;
 }
 
+// A TOTP one-time code with remaining validity
 export interface TOTPCode {
   code: string;
   period: number;
   remaining: number;
 }
 
+// Electron IPC API exposed on window object
 declare global {
   interface Window {
     electronAPI: {

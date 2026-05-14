@@ -1,10 +1,12 @@
 describe('Config — environment defaults', () => {
   const OLD_ENV = { ...process.env };
 
+  // Reset modules to re-evaluate config with modified env
   beforeEach(() => {
     jest.resetModules();
   });
 
+  // Restore original environment variables
   afterEach(() => {
     process.env = { ...OLD_ENV };
   });

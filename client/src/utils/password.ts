@@ -1,6 +1,7 @@
 import zxcvbn from 'zxcvbn';
 import type { PasswordScore, GeneratedPassword } from '@/types';
 
+// Score password strength using zxcvbn
 export function scorePassword(password: string): PasswordScore {
   const result = zxcvbn(password);
   const labels = ['Very Weak', 'Weak', 'Fair', 'Strong', 'Very Strong'];
@@ -19,6 +20,7 @@ const NUMBERS = '0123456789';
 const SYMBOLS = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 const AMBIGUOUS = '0O1lI5S2Z';
 
+// Generate a random password from selected character sets
 export function generatePassword(
   length: number,
   options: {
@@ -317,6 +319,7 @@ const WORDS = [
   'yellow', 'you', 'young', 'youth', 'zebra', 'zero', 'zone', 'zoo',
 ];
 
+// Generate a random passphrase from a word list
 export function generatePassphrase(options: {
   wordCount: number;
   separator: string;

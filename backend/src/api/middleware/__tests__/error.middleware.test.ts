@@ -1,6 +1,7 @@
 import { errorHandler, createError, AppError } from '../error.middleware';
 import { Request, Response, NextFunction } from 'express';
 
+// Creates mock request/response for testing error handler
 function mockReqRes(): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
   const req = {} as Request;
   let _status = 200;

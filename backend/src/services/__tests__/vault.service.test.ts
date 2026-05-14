@@ -6,6 +6,7 @@ import path from 'path';
 
 const testDbPath = path.join(__dirname, '../../../test-data/vault-test.db');
 
+// Seeds test data: one user, one vault, two entries
 function seed() {
   const db = getDb();
   const uid = uuidv4(), vid = uuidv4();
@@ -17,6 +18,7 @@ function seed() {
   return { uid, vid };
 }
 
+// Sets up a fresh test database before each test
 beforeEach(() => {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -27,6 +29,7 @@ beforeEach(() => {
   initDb(testDbPath);
 });
 
+// Cleans up test database files after all tests
 afterAll(() => {
   try { closeDb(); } catch { /* ok */ }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {

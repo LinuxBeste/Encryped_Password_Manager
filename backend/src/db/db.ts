@@ -5,8 +5,10 @@ import { config } from '../utils/config';
 import { logger } from '../utils/logger';
 import { migrations, SCHEMA_VERSION } from './schema';
 
+// Database instance handle
 let db: Database.Database;
 
+// Returns the initialized database instance
 export function getDb(): Database.Database {
   if (!db) {
     throw new Error('Database not initialized. Call initDb() first.');
@@ -14,6 +16,7 @@ export function getDb(): Database.Database {
   return db;
 }
 
+// Initialize SQLite database, apply migrations
 export function initDb(dbPath?: string): Database.Database {
   const resolvedPath = dbPath || config.dbPath;
 
@@ -34,6 +37,7 @@ export function initDb(dbPath?: string): Database.Database {
   return db;
 }
 
+// Apply pending migrations in order
 function runMigrations(database: Database.Database): void {
   const currentVersion = getCurrentVersion(database);
 
@@ -57,6 +61,7 @@ function runMigrations(database: Database.Database): void {
   }
 }
 
+// Get current schema version from the database
 function getCurrentVersion(database: Database.Database): number {
   try {
     const row = database
@@ -68,6 +73,7 @@ function getCurrentVersion(database: Database.Database): number {
   }
 }
 
+// Close the database connection
 export function closeDb(): void {
   if (db) {
     db.close();

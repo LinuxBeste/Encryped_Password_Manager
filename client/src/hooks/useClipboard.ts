@@ -4,12 +4,14 @@ interface UseClipboardOptions {
   autoClearMs?: number;
 }
 
+// Hook to copy text to clipboard with auto-clear countdown
 export function useClipboard({ autoClearMs = 30000 }: UseClipboardOptions = {}) {
   const [copied, setCopied] = useState(false);
   const [clearingIn, setClearingIn] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const countdownRef = useRef<ReturnType<typeof setInterval>>();
 
+  // Copy text and start auto-clear countdown
   const copy = useCallback(async (text: string) => {
     try {
       if (window.electronAPI) {
@@ -43,6 +45,7 @@ export function useClipboard({ autoClearMs = 30000 }: UseClipboardOptions = {}) 
     }
   }, [autoClearMs]);
 
+  // Clear clipboard and reset state
   const clear = useCallback(async () => {
     try {
       if (window.electronAPI) {

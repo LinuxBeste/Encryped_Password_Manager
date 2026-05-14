@@ -2,6 +2,7 @@ import { csrfProtection } from '../csrf.middleware';
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 
+// Creates mock request/response/next helpers for testing
 function mockReqRes(overrides: Partial<Request> = {}): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
   let _status = 200;
   let _body: any;

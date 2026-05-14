@@ -9,6 +9,7 @@ interface RateLimitBucket {
 
 const buckets = new Map<string, RateLimitBucket>();
 
+// In-memory sliding-window rate limiter keyed by IP or user ID
 function rateLimit(key: string, maxRequests: number, windowMs: number): boolean {
   const now = Date.now();
   const bucket = buckets.get(key);
@@ -26,6 +27,7 @@ function rateLimit(key: string, maxRequests: number, windowMs: number): boolean 
   return true;
 }
 
+// Rate limiter for auth routes (login, register)
 export function rateLimitAuth(req: Request, res: Response, next: NextFunction): void {
   const key = `auth:${req.ip}`;
   const allowed = rateLimit(key, config.rateLimitAuth, config.rateLimitAuthWindow);
@@ -38,6 +40,7 @@ export function rateLimitAuth(req: Request, res: Response, next: NextFunction): 
   next();
 }
 
+// Rate limiter for vault routes (get, sync, export)
 export function rateLimitVault(req: Request, res: Response, next: NextFunction): void {
   const userId = (req as any).userId;
   const key = `vault:${userId || req.ip}`;
@@ -50,6 +53,7 @@ export function rateLimitVault(req: Request, res: Response, next: NextFunction):
   next();
 }
 
+// Default rate limiter for all other routes
 export function rateLimitDefault(req: Request, res: Response, next: NextFunction): void {
   const userId = (req as any).userId;
   const key = `default:${userId || req.ip}`;
@@ -62,6 +66,7 @@ export function rateLimitDefault(req: Request, res: Response, next: NextFunction
   next();
 }
 
+// Exposes buckets for testing (clear between tests)
 export function getRateLimitBuckets(): Map<string, RateLimitBucket> {
   return buckets;
 }
