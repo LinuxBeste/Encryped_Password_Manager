@@ -32,7 +32,7 @@ export async function deriveKey(
   const key = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: useSalt,
+      salt: useSalt as unknown as BufferSource,
       iterations: PBKDF2_ITERATIONS,
       hash: 'SHA-256',
     },
@@ -64,8 +64,8 @@ export async function encrypt(
   );
   return {
     ciphertext: bufferToBase64(encrypted),
-    iv: bufferToBase64(iv.buffer),
-    salt: bufferToBase64(salt.buffer),
+    iv: bufferToBase64(iv.buffer as ArrayBuffer),
+    salt: bufferToBase64(salt.buffer as ArrayBuffer),
   };
 }
 

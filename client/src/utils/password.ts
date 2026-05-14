@@ -9,7 +9,7 @@ export function scorePassword(password: string): PasswordScore {
     score: result.score,
     label: labels[result.score],
     color: colors[result.score],
-    crackTime: result.crack_times_display.offline_slow_hashing_1e4_per_second,
+    crackTime: String(result.crack_times_display.offline_slow_hashing_1e4_per_second),
   };
 }
 
@@ -326,7 +326,7 @@ export function generatePassphrase(options: {
   const array = new Uint32Array(options.wordCount);
   crypto.getRandomValues(array);
 
-  let words = array.map((n) => WORDS[n % WORDS.length]);
+  let words = Array.from(array).map((n) => WORDS[n % WORDS.length]);
   if (options.capitalize) {
     words = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1));
   }

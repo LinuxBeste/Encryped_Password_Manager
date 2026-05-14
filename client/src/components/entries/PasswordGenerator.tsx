@@ -60,10 +60,10 @@ export function PasswordGenerator({ onSelect, onClose }: PasswordGeneratorProps)
           />
 
           <div className="space-y-2">
-            <Toggle checked={options.useUppercase} onChange={(v) => updateOption('uppercase', v)} label="Uppercase (A–Z)" />
-            <Toggle checked={options.useLowercase} onChange={(v) => updateOption('lowercase', v)} label="Lowercase (a–z)" />
-            <Toggle checked={options.useNumbers} onChange={(v) => updateOption('numbers', v)} label="Numbers (0–9)" />
-            <Toggle checked={options.useSymbols} onChange={(v) => updateOption('symbols', v)} label="Symbols (!@#$%...)" />
+            <Toggle checked={options.uppercase} onChange={(v) => updateOption('uppercase', v)} label="Uppercase (A–Z)" />
+            <Toggle checked={options.lowercase} onChange={(v) => updateOption('lowercase', v)} label="Lowercase (a–z)" />
+            <Toggle checked={options.numbers} onChange={(v) => updateOption('numbers', v)} label="Numbers (0–9)" />
+            <Toggle checked={options.symbols} onChange={(v) => updateOption('symbols', v)} label="Symbols (!@#$%...)" />
             <Toggle checked={options.excludeAmbiguous} onChange={(v) => updateOption('excludeAmbiguous', v)} label="Exclude ambiguous (0O1lI5S2Z)" />
           </div>
 
