@@ -16,7 +16,7 @@ import { useVaultStore } from './store/vault.store';
 import { useVault } from './hooks/useVault';
 import { useAutoLock } from './hooks/useAutoLock';
 import { useSettings } from './hooks/useSettings';
-import { initApi, setTokens } from './services/api.service';
+import { initApi, setTokens, login as apiLogin } from './services/api.service';
 import { KeyRound } from 'lucide-react';
 import type { VaultEntry } from './types';
 
@@ -33,16 +33,23 @@ export default function App() {
 
   useSettings();
 
-  // Unlock with hardcoded test password, init API and tokens
+  // Unlock by authenticating with the server
   const handleUnlock = useCallback(async (password: string) => {
-    if (password === 'test') {
-      unlock();
+    const user = useAuthStore.getState().user;
+    if (!user?.email) return false;
+    try {
       const url = 'http://localhost:3000/api';
-      initApi(url);
-      setTokens('test-token', 'test-refresh');
-      return true;
+      const result = await apiLogin(url, user.email, password);
+      if (result.success && result.data) {
+        unlock();
+        initApi(url);
+        setTokens(result.data.token, result.data.refreshToken);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
-    return false;
   }, [unlock]);
 
   // Switch to editor view for adding a new entry
