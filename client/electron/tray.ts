@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 let tray: Tray | null = null;
-let lockState = false;
+const lockState = false;
 
 // Creates system tray icon with dynamic lock/unlock context menu
 export function createTrayIcon(getLocked: () => boolean, onLock: () => void) {
