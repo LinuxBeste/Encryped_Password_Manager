@@ -14,6 +14,27 @@ function envInt(key: string, def: number): number {
   return v ? parseInt(v, 10) : def;
 }
 
+const SECRET_DEFAULTS = ['change-me-in-production', 'change-me-csrf-secret'];
+
+// Validate critical config at startup; exits in production if secrets are default values
+export function validateConfig(): void {
+  if (config.nodeEnv !== 'production') return;
+
+  const failures: string[] = [];
+  if (SECRET_DEFAULTS.includes(config.jwtSecret)) {
+    failures.push('JWT_SECRET must be set to a strong random value in production');
+  }
+  if (SECRET_DEFAULTS.includes(config.csrfSecret)) {
+    failures.push('CSRF_SECRET must be set to a strong random value in production');
+  }
+  if (failures.length > 0) {
+    for (const msg of failures) {
+      console.error(`FATAL: ${msg}`);
+    }
+    process.exit(1);
+  }
+}
+
 // Application configuration from environment
 export const config = {
   port: envInt('PORT', 3000),

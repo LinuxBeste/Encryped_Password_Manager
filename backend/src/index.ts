@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { config } from './utils/config';
+import { config, validateConfig } from './utils/config';
 import { logger } from './utils/logger';
 import { initDb, getDb, closeDb } from './db/db';
 import { errorHandler } from './api/middleware/error.middleware';
@@ -103,6 +103,7 @@ app.use(errorHandler);
 
 // Initialize DB and start HTTP server
 function start(): void {
+  validateConfig();
   initDb();
 
   const port = config.port;
