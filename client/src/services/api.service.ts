@@ -118,7 +118,7 @@ export async function register(
 ): Promise<ApiResponse<{ token: string; refreshToken: string }>> {
   const response = await axios.post<ApiResponse<{ token: string; refreshToken: string }>>(
     `${baseURL}/auth/register`,
-    { email, password: masterPassword }
+    { email, masterPassword }
   );
   return response.data;
 }
@@ -131,7 +131,7 @@ export async function login(
 ): Promise<ApiResponse<{ token: string; refreshToken: string }>> {
   const response = await axios.post<ApiResponse<{ token: string; refreshToken: string }>>(
     `${baseURL}/auth/login`,
-    { email, password: masterPassword }
+    { email, masterPassword }
   );
   return response.data;
 }
