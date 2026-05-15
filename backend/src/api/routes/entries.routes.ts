@@ -72,6 +72,11 @@ const moveEntrySchema = z.object({
   folder_id: z.string().uuid().nullable(),
 });
 
+// Schema: validate UUID path param
+const uuidParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
 // Get all entries for the authenticated user
 router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const entries = getEntries(req.userId!);
@@ -100,20 +105,27 @@ router.post(
 );
 
 // Get a single entry by ID
-router.get('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
-  const entry = getEntryById(req.params.id, req.userId!);
-  if (!entry) {
-    res.status(404).json({ success: false, error: 'Entry not found' });
-    return;
-  }
-  res.json({ success: true, data: entry });
-});
+router.get(
+  '/:id',
+  authenticate,
+  rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
+  (req: AuthRequest, res: Response) => {
+    const entry = getEntryById(req.params.id, req.userId!);
+    if (!entry) {
+      res.status(404).json({ success: false, error: 'Entry not found' });
+      return;
+    }
+    res.json({ success: true, data: entry });
+  },
+);
 
 // Update an existing entry's encrypted fields
 router.put(
   '/:id',
   authenticate,
   rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
   validate(updateEntrySchema),
   (req: AuthRequest, res: Response) => {
     const result = updateEntry(req.params.id, req.userId!, req.body);
@@ -129,17 +141,23 @@ router.put(
 );
 
 // Soft-delete an entry by ID
-router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
-  const result = deleteEntry(req.params.id, req.userId!);
+router.delete(
+  '/:id',
+  authenticate,
+  rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
+  (req: AuthRequest, res: Response) => {
+    const result = deleteEntry(req.params.id, req.userId!);
 
-  if (result.success) {
-    logAuditEvent(req.userId!, 'entry.delete', req.ip || '', req.headers['user-agent'] || '', {
-      entryId: req.params.id,
-    });
-  }
+    if (result.success) {
+      logAuditEvent(req.userId!, 'entry.delete', req.ip || '', req.headers['user-agent'] || '', {
+        entryId: req.params.id,
+      });
+    }
 
-  res.json(result);
-});
+    res.json(result);
+  },
+);
 
 // Bulk soft-delete multiple entries
 router.post(
@@ -165,16 +183,23 @@ router.post(
 );
 
 // Toggle the favorite flag on an entry
-router.patch('/:id/favorite', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
-  const result = toggleFavorite(req.params.id, req.userId!);
-  res.json(result);
-});
+router.patch(
+  '/:id/favorite',
+  authenticate,
+  rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
+  (req: AuthRequest, res: Response) => {
+    const result = toggleFavorite(req.params.id, req.userId!);
+    res.json(result);
+  },
+);
 
 // Move an entry to a different folder (or null for root)
 router.post(
   '/:id/move',
   authenticate,
   rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
   validate(moveEntrySchema),
   (req: AuthRequest, res: Response) => {
     const result = moveEntry(req.params.id, req.userId!, req.body.folder_id);

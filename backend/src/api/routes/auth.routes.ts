@@ -45,6 +45,11 @@ const deleteAccountSchema = z.object({
   masterPassword: z.string(),
 });
 
+// Schema: 6-digit TOTP code
+const totpVerifySchema = z.object({
+  code: z.string().length(6),
+});
+
 // Register a new user account
 router.post('/register', rateLimitAuth, validate(registerSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
@@ -162,12 +167,9 @@ router.post(
   '/totp/verify',
   authenticate,
   rateLimitAuth,
-  async (req: AuthRequest, res: Response) => {
+  validate(totpVerifySchema),
+  (req: AuthRequest, res: Response) => {
     const { code } = req.body;
-    if (!code || code.length !== 6) {
-      res.status(400).json({ success: false, error: 'Invalid TOTP code' });
-      return;
-    }
 
     const db = getDb();
     const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(req.userId) as

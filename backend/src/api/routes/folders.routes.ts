@@ -33,6 +33,11 @@ const reorderSchema = z.object({
   ),
 });
 
+// Schema: validate UUID path param
+const uuidParamSchema = z.object({
+  id: z.string().uuid(),
+});
+
 // List all folders for the authenticated user with entry counts
 router.get('/', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
   const db = getDb();
@@ -86,6 +91,7 @@ router.put(
   '/:id',
   authenticate,
   rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
   validate(renameFolderSchema),
   (req: AuthRequest, res: Response) => {
     const db = getDb();
@@ -114,31 +120,37 @@ router.put(
 );
 
 // Delete a folder and unlink its entries (set folder_id to null)
-router.delete('/:id', authenticate, rateLimitDefault, (req: AuthRequest, res: Response) => {
-  const db = getDb();
-  const existing = db
-    .prepare('SELECT * FROM folders WHERE id = ? AND user_id = ?')
-    .get(req.params.id, req.userId!);
+router.delete(
+  '/:id',
+  authenticate,
+  rateLimitDefault,
+  validate(uuidParamSchema, 'params'),
+  (req: AuthRequest, res: Response) => {
+    const db = getDb();
+    const existing = db
+      .prepare('SELECT * FROM folders WHERE id = ? AND user_id = ?')
+      .get(req.params.id, req.userId!);
 
-  if (!existing) {
-    res.status(404).json({ success: false, error: 'Folder not found' });
-    return;
-  }
+    if (!existing) {
+      res.status(404).json({ success: false, error: 'Folder not found' });
+      return;
+    }
 
-  const folderId = req.params.id;
-  db.transaction(() => {
-    db.prepare(
-      'UPDATE entries SET folder_id = NULL, updated_at = ? WHERE folder_id = ? AND user_id = ?',
-    ).run(Date.now(), folderId, req.userId!);
-    db.prepare('DELETE FROM folders WHERE id = ? AND user_id = ?').run(folderId, req.userId!);
-  })();
+    const folderId = req.params.id;
+    db.transaction(() => {
+      db.prepare(
+        'UPDATE entries SET folder_id = NULL, updated_at = ? WHERE folder_id = ? AND user_id = ?',
+      ).run(Date.now(), folderId, req.userId!);
+      db.prepare('DELETE FROM folders WHERE id = ? AND user_id = ?').run(folderId, req.userId!);
+    })();
 
-  logAuditEvent(req.userId!, 'folder.delete', req.ip || '', req.headers['user-agent'] || '', {
-    folderId,
-  });
+    logAuditEvent(req.userId!, 'folder.delete', req.ip || '', req.headers['user-agent'] || '', {
+      folderId,
+    });
 
-  res.json({ success: true });
-});
+    res.json({ success: true });
+  },
+);
 
 // Reorder folders by updating their sort_order values
 router.patch(
