@@ -7,15 +7,42 @@ interface RateLimitBucket {
   resetAt: number;
 }
 
-const buckets = new Map<string, RateLimitBucket>();
+// Pluggable store for rate limit buckets — swap for Redis/etc in multi-instance deployments
+export interface RateLimitStore {
+  get(key: string): RateLimitBucket | undefined;
+  set(key: string, bucket: RateLimitBucket): void;
+  clear(): void;
+}
 
-// In-memory sliding-window rate limiter keyed by IP or user ID
+class MemoryRateLimitStore implements RateLimitStore {
+  private readonly buckets = new Map<string, RateLimitBucket>();
+
+  get(key: string): RateLimitBucket | undefined {
+    return this.buckets.get(key);
+  }
+
+  set(key: string, bucket: RateLimitBucket): void {
+    this.buckets.set(key, bucket);
+  }
+
+  clear(): void {
+    this.buckets.clear();
+  }
+}
+
+let store: RateLimitStore = new MemoryRateLimitStore();
+
+// Replace the default in-memory store with an external implementation
+export function setRateLimitStore(custom: RateLimitStore): void {
+  store = custom;
+}
+
 function rateLimit(key: string, maxRequests: number, windowMs: number): boolean {
   const now = Date.now();
-  const bucket = buckets.get(key);
+  const bucket = store.get(key);
 
   if (!bucket || now > bucket.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
+    store.set(key, { count: 1, resetAt: now + windowMs });
     return true;
   }
 
@@ -66,7 +93,7 @@ export function rateLimitDefault(req: Request, res: Response, next: NextFunction
   next();
 }
 
-// Exposes buckets for testing (clear between tests)
-export function getRateLimitBuckets(): Map<string, RateLimitBucket> {
-  return buckets;
+// Exposes store for testing (clear between tests)
+export function getRateLimitBuckets(): { clear: () => void } {
+  return store;
 }
