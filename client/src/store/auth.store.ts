@@ -55,6 +55,14 @@ export const useAuthStore = create<AuthState>()(
       setFirstRun: (val) => set({ isFirstRun: val }),
       setUser: (user) => set({ user }),
     }),
-    { name: 'vaultlock-auth' },
+    { name: 'vaultlock-auth',
+      // Only persist non-sensitive fields; tokens live in api.service.ts memory
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        isLocked: state.isLocked,
+        isFirstRun: state.isFirstRun,
+        user: state.user,
+      }),
+    },
   ),
 );
