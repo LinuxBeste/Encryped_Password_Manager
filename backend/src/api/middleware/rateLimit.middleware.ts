@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../../utils/config';
 import { logger } from '../../utils/logger';
+import { AuthRequest } from './auth.middleware';
 
 interface RateLimitBucket {
   count: number;
@@ -68,8 +69,8 @@ export function rateLimitAuth(req: Request, res: Response, next: NextFunction): 
 }
 
 // Rate limiter for vault routes (get, sync, export)
-export function rateLimitVault(req: Request, res: Response, next: NextFunction): void {
-  const userId = (req as any).userId;
+export function rateLimitVault(req: AuthRequest, res: Response, next: NextFunction): void {
+  const userId = req.userId;
   const key = `vault:${userId || req.ip}`;
   const allowed = rateLimit(key, config.rateLimitVault, config.rateLimitVaultWindow);
 
@@ -81,8 +82,8 @@ export function rateLimitVault(req: Request, res: Response, next: NextFunction):
 }
 
 // Default rate limiter for all other routes
-export function rateLimitDefault(req: Request, res: Response, next: NextFunction): void {
-  const userId = (req as any).userId;
+export function rateLimitDefault(req: AuthRequest, res: Response, next: NextFunction): void {
+  const userId = req.userId;
   const key = `default:${userId || req.ip}`;
   const allowed = rateLimit(key, config.rateLimitDefault, config.rateLimitDefaultWindow);
 

@@ -40,7 +40,7 @@ export function getAuditLogs(
     items: items.map((item) => ({
       ...item,
       metadata: item.metadata ? JSON.parse(item.metadata) : null,
-    })) as any,
+    })) as unknown as AuditLog[],
     total: countRow.total,
     page,
     limit: Math.min(limit, 1000),

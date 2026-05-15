@@ -135,7 +135,7 @@ describe('AuthService — login', () => {
 
   it('returns JWT containing userId and email', async () => {
     const result = await loginUser(testEmail, testPw);
-    const decoded = JSON.parse(Buffer.from(result.data!.token.split('.')[1], 'base64').toString());
+    const decoded = JSON.parse(Buffer.from(result.data!.token!.split('.')[1], 'base64').toString());
     expect(decoded.userId).toBeDefined();
     expect(decoded.email).toBe(testEmail);
   });
@@ -153,7 +153,7 @@ describe('AuthService — refresh token', () => {
   beforeEach(async () => {
     await registerUser(testEmail, testPw);
     const login = await loginUser(testEmail, testPw);
-    refreshToken = login.data!.refreshToken;
+    refreshToken = login.data!.refreshToken!;
   });
 
   it('returns new access token with valid refresh token', () => {
@@ -196,7 +196,7 @@ describe('AuthService — logout', () => {
   beforeEach(async () => {
     await registerUser(testEmail, testPw);
     const login = await loginUser(testEmail, testPw);
-    refreshToken = login.data!.refreshToken;
+    refreshToken = login.data!.refreshToken!;
   });
 
   it('revokes the refresh token on logout', () => {
@@ -316,7 +316,7 @@ describe('AuthService — JWT token validation', () => {
   it('generates a valid JWT that can be decoded', async () => {
     await registerUser('jwt-test@test.com', testPw);
     const login = await loginUser('jwt-test@test.com', testPw);
-    const parts = login.data!.token.split('.');
+    const parts = login.data!.token!.split('.');
     expect(parts).toHaveLength(3);
     const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
     expect(payload.email).toBe('jwt-test@test.com');

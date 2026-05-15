@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { authenticator } from 'otplib';
 import { getDb } from '../db/db';
 import { config } from '../utils/config';
 import { logger } from '../utils/logger';
 import { hashPassword, verifyPassword } from './crypto.service';
-import { User, JwtPayload, ApiResponse } from '../types';
+import { User, JwtPayload, ApiResponse, RefreshToken } from '../types';
 
 // Register a new user with email and master password
 export async function registerUser(
@@ -45,7 +45,15 @@ export async function registerUser(
 export async function loginUser(
   email: string,
   masterPassword: string,
-): Promise<ApiResponse<{ userId: string; email: string; token: string; refreshToken: string }>> {
+): Promise<
+  ApiResponse<{
+    userId: string;
+    email: string;
+    token?: string;
+    refreshToken?: string;
+    totpRequired?: boolean;
+  }>
+> {
   const db = getDb();
 
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email) as User | undefined;
@@ -61,7 +69,7 @@ export async function loginUser(
   if (user.totp_secret) {
     return {
       success: true,
-      data: { userId: user.id, email: user.email, totpRequired: true } as any,
+      data: { userId: user.id, email: user.email, totpRequired: true },
     };
   }
 
@@ -108,7 +116,7 @@ export function refreshAccessToken(
 
   const row = db
     .prepare('SELECT * FROM refresh_tokens WHERE token_hash = ? AND revoked = 0 AND expires_at > ?')
-    .get(hash, Date.now()) as any;
+    .get(hash, Date.now()) as RefreshToken | undefined;
 
   if (!row) {
     return { success: false, error: 'Invalid or expired refresh token' };
@@ -168,7 +176,7 @@ export async function deleteAccount(userId: string, masterPassword: string): Pro
 // Sign a JWT access token for the user
 function generateJwt(user: User): string {
   const payload: JwtPayload = { userId: user.id, email: user.email };
-  return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as any);
+  return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn } as SignOptions);
 }
 
 // Generate and persist a new refresh token
