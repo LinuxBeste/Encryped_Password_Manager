@@ -29,7 +29,6 @@ export default function App() {
   const settings = useSettings();
 
   const [showSettings, setShowSettings] = useState(false);
-  const [syncing, setSyncing] = useState(false);
 
   useSettings();
 
