@@ -129,9 +129,10 @@ export function parseCsvImport(csv: string): CsvEntry[] {
 // Detect which password manager format a CSV uses based on its header
 export function detectCsvFormat(csv: string): '1password' | 'bitwarden' | 'lastpass' | 'keepass' | 'unknown' {
   const header = csv.trim().split('\n')[0].toLowerCase();
-  if (header.includes('url') && header.includes('username') && header.includes('password')) return 'bitwarden';
-  if (header.includes('url') && header.includes('username') && header.includes('extra')) return '1password';
-  if (header.includes('name') && header.includes('url') && header.includes('password')) return 'lastpass';
-  if (header.includes('group') && header.includes('title') && header.includes('username')) return 'keepass';
+  const fields = header.split(',').map((f) => f.trim());
+  if (fields.includes('url') && fields.includes('username') && fields.includes('password') && !fields.includes('extra') && !fields.includes('group')) return 'bitwarden';
+  if (fields.includes('url') && fields.includes('username') && fields.includes('extra')) return '1password';
+  if (fields.includes('name') && fields.includes('url') && fields.includes('password')) return 'lastpass';
+  if (fields.includes('group') && fields.includes('title') && fields.includes('username')) return 'keepass';
   return 'unknown';
 }

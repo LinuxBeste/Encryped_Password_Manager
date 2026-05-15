@@ -8,6 +8,14 @@ function bufferToBase64(buf: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)));
 }
 
+// Ensure we have an ArrayBuffer from a TypedArray
+function toArrayBuffer(buf: ArrayBuffer | Uint8Array): ArrayBuffer {
+  if (buf instanceof Uint8Array) {
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+  }
+  return buf;
+}
+
 // Convert base64 string to ArrayBuffer
 function base64ToBuffer(str: string): ArrayBuffer {
   return Uint8Array.from(atob(str), (c) => c.charCodeAt(0)).buffer;
@@ -80,10 +88,10 @@ export async function decrypt(
   masterPassword: string,
   email: string
 ): Promise<string> {
-  const salt = base64ToBuffer(data.salt);
-  const { key } = await deriveKey(masterPassword, email, new Uint8Array(salt));
-  const iv = base64ToBuffer(data.iv);
-  const ciphertext = base64ToBuffer(data.ciphertext);
+  const salt = new Uint8Array(base64ToBuffer(data.salt));
+  const { key } = await deriveKey(masterPassword, email, salt);
+  const iv = new Uint8Array(base64ToBuffer(data.iv));
+  const ciphertext = new Uint8Array(base64ToBuffer(data.ciphertext));
   const decrypted = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv },
     key,
@@ -98,9 +106,11 @@ export function generateEncryptionKey(): string {
   return bufferToBase64(key.buffer);
 }
 
-// Clear sensitive key data from memory
+// Clear sensitive key data from memory (best-effort)
 export function zeroKey(key: CryptoKey | null): void {
   if (key) {
-    (key as unknown as Record<string, unknown>).algorithm = {};
+    try {
+      (key as unknown as Record<string, unknown>).algorithm = {};
+    } catch { /* read-only in some runtimes */ }
   }
 }
