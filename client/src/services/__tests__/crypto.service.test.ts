@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { generateSalt, deriveKey, encrypt, decrypt, generateEncryptionKey, zeroKey } from '../crypto.service';
+import { generateSalt, deriveKey, encrypt, decrypt, generateEncryptionKey, zeroKey, zeroSalt } from '../crypto.service';
 
 describe('crypto.service', () => {
   const testPassword = 'MySecureMasterPassword123!';
@@ -85,6 +85,18 @@ describe('crypto.service', () => {
     it('runs without error on CryptoKey (no-op)', async () => {
       const { key } = await deriveKey(testPassword, testEmail);
       expect(() => zeroKey(key)).not.toThrow();
+    });
+  });
+
+  describe('zeroSalt', () => {
+    it('zeroes a Uint8Array in place', () => {
+      const salt = new Uint8Array([1, 2, 3, 4]);
+      zeroSalt(salt);
+      expect(salt).toEqual(new Uint8Array(4));
+    });
+
+    it('does not throw with null input', () => {
+      expect(() => zeroSalt(null)).not.toThrow();
     });
   });
 });

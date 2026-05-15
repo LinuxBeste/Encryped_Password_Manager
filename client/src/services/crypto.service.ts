@@ -106,11 +106,20 @@ export function generateEncryptionKey(): string {
   return bufferToBase64(key.buffer);
 }
 
-// Clear sensitive key data from memory (best-effort)
+// Clear sensitive data from memory (best-effort).
+// CryptoKey key material is stored in an opaque backing store inaccessible
+// from JavaScript; the algorithm property is metadata only and overwriting
+// it does NOT clear the actual key.  For Uint8Array values we zero-fill.
 export function zeroKey(key: CryptoKey | null): void {
   if (key) {
     try {
       (key as unknown as Record<string, unknown>).algorithm = {};
-    } catch { /* read-only in some runtimes */ }
+    } catch { /* read-only in some runtimes — noop is expected */ }
+  }
+}
+
+export function zeroSalt(salt: Uint8Array | null): void {
+  if (salt) {
+    salt.fill(0);
   }
 }
