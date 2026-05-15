@@ -2,7 +2,11 @@ import { errorHandler, createError, AppError } from '../error.middleware';
 import { Request, Response, NextFunction } from 'express';
 
 // Creates mock request/response for testing error handler
-function mockReqRes(): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
+function mockReqRes(): {
+  req: Request;
+  res: Response & { _status: number; _body: any };
+  next: NextFunction;
+} {
   const req = {} as Request;
   let _status = 200;
   let _body: any;
@@ -16,8 +20,12 @@ function mockReqRes(): { req: Request; res: Response & { _status: number; _body:
       _body = data;
       return res;
     },
-    get _status() { return _status; },
-    get _body() { return _body; },
+    get _status() {
+      return _status;
+    },
+    get _body() {
+      return _body;
+    },
   } as unknown as Response & { _status: number; _body: any };
 
   const next = jest.fn();

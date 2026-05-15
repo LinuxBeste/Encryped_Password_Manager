@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 
 // Creates mock request/response/next helpers for testing
-function mockReqRes(overrides: Partial<Request> = {}): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
+function mockReqRes(overrides: Partial<Request> = {}): {
+  req: Request;
+  res: Response & { _status: number; _body: any };
+  next: NextFunction;
+} {
   let _status = 200;
   let _body: any;
 
@@ -26,8 +30,12 @@ function mockReqRes(overrides: Partial<Request> = {}): { req: Request; res: Resp
       _body = data;
       return res;
     },
-    get _status() { return _status; },
-    get _body() { return _body; },
+    get _status() {
+      return _status;
+    },
+    get _body() {
+      return _body;
+    },
   } as unknown as Response & { _status: number; _body: any };
 
   const next = jest.fn();

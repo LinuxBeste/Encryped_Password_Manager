@@ -1,5 +1,11 @@
 // Tests for argon2id hashing, AES-256-GCM encryption, and salt generation
-import { hashPassword, verifyPassword, generateSalt, encryptAes256Gcm, decryptAes256Gcm } from '../crypto.service';
+import {
+  hashPassword,
+  verifyPassword,
+  generateSalt,
+  encryptAes256Gcm,
+  decryptAes256Gcm,
+} from '../crypto.service';
 
 describe('CryptoService — argon2id hashing', () => {
   const passwords = [
@@ -58,13 +64,7 @@ describe('CryptoService — argon2id hashing', () => {
   });
 
   it('should reject malformed hash strings', async () => {
-    const bad = [
-      'not-a-hash',
-      '$argon2id$',
-      '$argon2id$v=19$m=65536',
-      'invalid',
-      '12345',
-    ];
+    const bad = ['not-a-hash', '$argon2id$', '$argon2id$v=19$m=65536', 'invalid', '12345'];
     for (const h of bad) {
       expect(await verifyPassword(h, 'test')).toBe(false);
     }

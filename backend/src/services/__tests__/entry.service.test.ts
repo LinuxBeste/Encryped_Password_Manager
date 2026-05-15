@@ -19,10 +19,18 @@ const testDbPath = path.join(__dirname, '../../../test-data/entry-test.db');
 // Seeds a user and default vault for entry tests
 function seedUserAndVault() {
   const db = getDb();
-  const uid = uuidv4(), vid = uuidv4();
-  db.prepare('INSERT INTO users (id, email, argon2_hash, created_at) VALUES (?, ?, ?, ?)').run(uid, 'entry-test@test.com', 'hash', 1);
+  const uid = uuidv4(),
+    vid = uuidv4();
+  db.prepare('INSERT INTO users (id, email, argon2_hash, created_at) VALUES (?, ?, ?, ?)').run(
+    uid,
+    'entry-test@test.com',
+    'hash',
+    1,
+  );
   const emptyBuf = Buffer.alloc(0);
-  db.prepare('INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)').run(vid, uid, 'default', emptyBuf, emptyBuf, emptyBuf, 1);
+  db.prepare(
+    'INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)',
+  ).run(vid, uid, 'default', emptyBuf, emptyBuf, emptyBuf, 1);
   return { uid, vid };
 }
 
@@ -45,17 +53,33 @@ function makeEntry(overrides: Record<string, any> = {}) {
 beforeEach(() => {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
   initDb(testDbPath);
 });
 
 afterAll(() => {
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
 });
 
@@ -80,7 +104,9 @@ describe('EntryService — create', () => {
     const { uid, vid } = seedUserAndVault();
     const db = getDb();
     const fid = uuidv4();
-    db.prepare('INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(fid, vid, uid, Buffer.from('folder'), 0, 1);
+    db.prepare(
+      'INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).run(fid, vid, uid, Buffer.from('folder'), 0, 1);
     const entry = createEntry(makeEntry({ uid, vid, folder_id: fid }));
     expect(entry.folder_id).toBe(fid);
   });
@@ -95,7 +121,18 @@ describe('EntryService — create', () => {
     expect(entry.updated_at).toBe(entry.created_at);
   });
 
-  const types = ['password', 'note', 'credit-card', 'identity', 'bank-account', 'document', 'api-key', 'database', 'email', 'wifi'];
+  const types = [
+    'password',
+    'note',
+    'credit-card',
+    'identity',
+    'bank-account',
+    'document',
+    'api-key',
+    'database',
+    'email',
+    'wifi',
+  ];
   it.each(types)('creates entry of type: %s', (type) => {
     const { uid, vid } = seedUserAndVault();
     const entry = createEntry(makeEntry({ uid, vid, type }));
@@ -251,7 +288,9 @@ describe('EntryService — move', () => {
     const { uid, vid } = seedUserAndVault();
     const db = getDb();
     const fid = uuidv4();
-    db.prepare('INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(fid, vid, uid, Buffer.from('f'), 0, 1);
+    db.prepare(
+      'INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).run(fid, vid, uid, Buffer.from('f'), 0, 1);
     const entry = createEntry(makeEntry({ uid, vid }));
     const result = moveEntry(entry.id, uid, fid);
     expect(result.success).toBe(true);
@@ -294,7 +333,9 @@ describe('EntryService — sync', () => {
   it('includes folders in sync response', () => {
     const { uid, vid } = seedUserAndVault();
     const db = getDb();
-    db.prepare('INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(uuidv4(), vid, uid, Buffer.from('f'), 0, 1);
+    db.prepare(
+      'INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).run(uuidv4(), vid, uid, Buffer.from('f'), 0, 1);
     const result = syncEntries(uid, { lastSyncAt: 0, deletedIds: [] });
     expect(result.data!.folders).toHaveLength(1);
   });
@@ -311,7 +352,9 @@ describe('EntryService — edge cases', () => {
     const vid2 = uuidv4();
     const db = getDb();
     const emptyBuf = Buffer.alloc(0);
-    db.prepare('INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)').run(vid2, uid, 'v2', emptyBuf, emptyBuf, emptyBuf, 1);
+    db.prepare(
+      'INSERT INTO vaults (id, user_id, name, encrypted_blob, iv, auth_tag, version, updated_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?)',
+    ).run(vid2, uid, 'v2', emptyBuf, emptyBuf, emptyBuf, 1);
     createEntry(makeEntry({ uid, vid }));
     createEntry(makeEntry({ uid, vid: vid2 }));
     expect(getEntries(uid)).toHaveLength(2);

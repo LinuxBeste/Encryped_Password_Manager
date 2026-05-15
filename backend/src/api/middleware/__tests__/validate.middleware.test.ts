@@ -3,7 +3,11 @@ import { z, ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
 
 // Creates mock request/response with body tracking
-function mockReqRes(body: any = {}): { req: Request; res: Response & { _status: number; _body: any }; next: NextFunction } {
+function mockReqRes(body: any = {}): {
+  req: Request;
+  res: Response & { _status: number; _body: any };
+  next: NextFunction;
+} {
   const req = { body, query: {}, params: {} } as unknown as Request;
 
   let _status = 200;
@@ -17,8 +21,12 @@ function mockReqRes(body: any = {}): { req: Request; res: Response & { _status: 
       _body = data;
       return res;
     },
-    get _status() { return _status; },
-    get _body() { return _body; },
+    get _status() {
+      return _status;
+    },
+    get _body() {
+      return _body;
+    },
   } as unknown as Response & { _status: number; _body: any };
 
   const next = jest.fn();
@@ -43,7 +51,10 @@ describe('Validate Middleware', () => {
 
   it('strips unknown fields', () => {
     const { req, res, next } = mockReqRes({
-      email: 'a@b.com', age: 30, name: 'Jane', extra: 'should be stripped',
+      email: 'a@b.com',
+      age: 30,
+      name: 'Jane',
+      extra: 'should be stripped',
     });
     const middleware = validate(testSchema, 'body');
     middleware(req, res, next);
@@ -120,7 +131,9 @@ describe('Validate Middleware', () => {
         return res;
       },
       json: (d: any) => d,
-      get _status() { return _status; },
+      get _status() {
+        return _status;
+      },
     } as unknown as Response & { _status: number };
     const next = jest.fn();
     const middleware = validate(querySchema, 'query');
@@ -138,7 +151,9 @@ describe('Validate Middleware', () => {
         return res;
       },
       json: (d: any) => d,
-      get _status() { return _status; },
+      get _status() {
+        return _status;
+      },
     } as unknown as Response & { _status: number };
     const next = jest.fn();
     const middleware = validate(querySchema, 'query');

@@ -10,18 +10,34 @@ const testDbPath = path.join(__dirname, '../../../test-data/audit-test.db');
 beforeEach(() => {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
   initDb(testDbPath);
 });
 
 // Cleans up test database files after all tests
 afterAll(() => {
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
 });
 

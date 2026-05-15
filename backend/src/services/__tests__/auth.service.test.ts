@@ -17,9 +17,17 @@ const testDbPath = path.join(__dirname, '../../../test-data/auth-test.db');
 function setupDb() {
   const dir = path.dirname(testDbPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
   return initDb(testDbPath);
 }
@@ -29,9 +37,17 @@ beforeEach(() => {
 });
 
 afterAll(() => {
-  try { closeDb(); } catch { /* ok */ }
+  try {
+    closeDb();
+  } catch {
+    /* ok */
+  }
   for (const f of [testDbPath, testDbPath + '-wal', testDbPath + '-shm']) {
-    try { fs.unlinkSync(f); } catch { /* ok */ }
+    try {
+      fs.unlinkSync(f);
+    } catch {
+      /* ok */
+    }
   }
 });
 
@@ -225,10 +241,13 @@ describe('AuthService — account deletion', () => {
 
   it('removes all related data on deletion', async () => {
     const db = getDb();
-    db.prepare('INSERT INTO audit_log (id, user_id, action, ip_address, user_agent, metadata, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)')
-      .run(uuidv4(), userId, 'test', '', '', null, 1);
+    db.prepare(
+      'INSERT INTO audit_log (id, user_id, action, ip_address, user_agent, metadata, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    ).run(uuidv4(), userId, 'test', '', '', null, 1);
     await deleteAccount(userId, testPw);
-    expect(db.prepare('SELECT COUNT(*) as c FROM audit_log WHERE user_id = ?').get(userId)).toEqual({ c: 0 });
+    expect(db.prepare('SELECT COUNT(*) as c FROM audit_log WHERE user_id = ?').get(userId)).toEqual(
+      { c: 0 },
+    );
   });
 });
 
@@ -238,9 +257,7 @@ describe('AuthService — edge cases', () => {
       registerUser('concurrent@test.com', testPw),
       registerUser('concurrent@test.com', testPw),
     ]);
-    const successes = results.filter(
-      r => r.status === 'fulfilled' && r.value.success,
-    ).length;
+    const successes = results.filter((r) => r.status === 'fulfilled' && r.value.success).length;
     expect(successes).toBe(1);
   });
 
@@ -277,7 +294,9 @@ describe('AuthService — TOTP via db direct', () => {
     const db = getDb();
     const secret = crypto.randomBytes(20).toString('base64');
     db.prepare('UPDATE users SET totp_secret = ? WHERE id = ?').run(secret, reg.data!.userId);
-    const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(reg.data!.userId) as any;
+    const user = db
+      .prepare('SELECT totp_secret FROM users WHERE id = ?')
+      .get(reg.data!.userId) as any;
     expect(user.totp_secret).toBe(secret);
   });
 
@@ -286,7 +305,9 @@ describe('AuthService — TOTP via db direct', () => {
     const db = getDb();
     db.prepare('UPDATE users SET totp_secret = ? WHERE id = ?').run('somescret', reg.data!.userId);
     db.prepare('UPDATE users SET totp_secret = NULL WHERE id = ?').run(reg.data!.userId);
-    const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(reg.data!.userId) as any;
+    const user = db
+      .prepare('SELECT totp_secret FROM users WHERE id = ?')
+      .get(reg.data!.userId) as any;
     expect(user.totp_secret).toBeNull();
   });
 });
