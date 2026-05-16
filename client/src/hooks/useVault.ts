@@ -65,14 +65,12 @@ export function useVault() {
     } catch { /* ignore */ }
   }, [updateEntry]);
 
-  // Delete entry via API and local store
+  // Delete entry locally then sync to API
   const deleteEntry = useCallback(async (id: string) => {
+    removeEntry(id);
     try {
       const api = getApi();
-      const response = await api.delete(`/entries/${id}`);
-      if (response.data.success) {
-        removeEntry(id);
-      }
+      await api.delete(`/entries/${id}`);
     } catch { /* ignore */ }
   }, [removeEntry]);
 
@@ -122,5 +120,23 @@ export function useVault() {
     return null;
   }, [vaultId, folders.length]);
 
-  return { entries, folders, vaultName, vaultId, loadVault, createEntry, editEntry, deleteEntry, favoriteEntry, createFolder, clearVault };
+  // Rename folder locally then sync to API
+  const renameFolder = useCallback(async (id: string, name: string) => {
+    useVaultStore.getState().updateFolder(id, { name });
+    try {
+      const api = getApi();
+      await api.put(`/folders/${id}`, { name_encrypted: btoa(name) });
+    } catch { /* ignore */ }
+  }, []);
+
+  // Delete folder locally then sync to API
+  const deleteFolder = useCallback(async (id: string) => {
+    useVaultStore.getState().removeFolder(id);
+    try {
+      const api = getApi();
+      await api.delete(`/folders/${id}`);
+    } catch { /* ignore */ }
+  }, []);
+
+  return { entries, folders, vaultName, vaultId, loadVault, createEntry, editEntry, deleteEntry, favoriteEntry, createFolder, renameFolder, deleteFolder, clearVault };
 }

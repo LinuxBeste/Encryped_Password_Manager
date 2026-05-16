@@ -23,7 +23,7 @@ import type { VaultEntry } from './types';
 // Root application component, manages auth, navigation, and entry CRUD
 export default function App() {
   const { isAuthenticated, isLocked, isFirstRun, login, logout, lock, unlock } = useAuthStore();
-  const { selectedNav, selectedEntry, panelView, searchQuery, contextMenu, setSelectedNav, selectEntry, setPanelView, setSearchQuery, setContextMenu } = useUIStore();
+  const { selectedNav, selectedEntry, selectedFolderId, panelView, searchQuery, contextMenu, setSelectedNav, selectEntry, setSelectedFolder, setPanelView, setSearchQuery, setContextMenu } = useUIStore();
   const { entries, folders } = useVaultStore();
   const { loadVault, createEntry, editEntry, favoriteEntry, deleteEntry } = useVault();
   const settings = useSettings();
@@ -100,25 +100,29 @@ export default function App() {
     }
   }, [isAuthenticated, isLocked, isFirstRun, loadVault]);
 
-  // Filter entries based on the selected navigation category
+  // Filter entries based on selected folder and navigation category
   const filteredEntries = useMemo(() => {
+    let result = entries;
+    if (selectedFolderId) {
+      result = result.filter((e) => e.folderId === selectedFolderId);
+    }
     switch (selectedNav) {
       case 'favorites':
-        return entries.filter((e) => e.favorite);
+        return result.filter((e) => e.favorite);
       case 'passwords':
-        return entries.filter((e) => e.type === 'password');
+        return result.filter((e) => e.type === 'password');
       case 'notes':
-        return entries.filter((e) => e.type === 'note');
+        return result.filter((e) => e.type === 'note');
       case 'credit-cards':
-        return entries.filter((e) => e.type === 'credit-card');
+        return result.filter((e) => e.type === 'credit-card');
       case 'identities':
-        return entries.filter((e) => e.type === 'identity');
+        return result.filter((e) => e.type === 'identity');
       case 'ssh-keys':
-        return entries.filter((e) => e.type === 'ssh-key');
+        return result.filter((e) => e.type === 'ssh-key');
       default:
-        return entries;
+        return result;
     }
-  }, [selectedNav, entries]);
+  }, [selectedNav, selectedFolderId, entries]);
 
   // Show context menu on right-click
   const handleEntryContextMenu = useCallback((e: React.MouseEvent, entry: VaultEntry) => {
@@ -181,6 +185,8 @@ export default function App() {
         <Sidebar
           selectedNav={selectedNav}
           onSelectNav={setSelectedNav}
+          selectedFolderId={selectedFolderId}
+          onSelectFolder={setSelectedFolder}
           onLock={handleLock}
           onSettings={() => setShowSettings(true)}
           syncStatus="synced"
@@ -235,7 +241,10 @@ export default function App() {
             { id: 'copy-username', label: 'Copy Username', shortcut: '⌘B', onClick: handleCopyUsername },
             { id: 'sep1', separator: true, label: '', onClick: () => {} },
             { id: 'favorite', label: 'Toggle Favorite', onClick: () => favoriteEntry(contextMenu.entry.id) },
-            { id: 'delete', label: 'Delete', danger: true, onClick: () => deleteEntry(contextMenu.entry.id) },
+            { id: 'delete', label: 'Delete', danger: true, onClick: () => {
+              deleteEntry(contextMenu.entry.id);
+              if (selectedEntry?.id === contextMenu.entry.id) selectEntry(null);
+            } },
           ]}
         />
       )}

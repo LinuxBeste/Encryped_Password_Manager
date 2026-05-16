@@ -27,6 +27,8 @@ const navItems: NavItem[] = [
 interface SidebarProps {
   selectedNav: string;
   onSelectNav: (id: string) => void;
+  selectedFolderId: string | null;
+  onSelectFolder: (id: string | null) => void;
   onLock: () => void;
   onSettings: () => void;
   userName?: string;
@@ -34,7 +36,7 @@ interface SidebarProps {
   syncStatus: 'synced' | 'syncing' | 'error';
 }
 
-export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName, userEmail, syncStatus }: SidebarProps) {
+export function Sidebar({ selectedNav, onSelectNav, selectedFolderId, onSelectFolder, onLock, onSettings, userName, userEmail, syncStatus }: SidebarProps) {
   const [foldersOpen, setFoldersOpen] = useState(true);
 
   return (
@@ -75,7 +77,7 @@ export function Sidebar({ selectedNav, onSelectNav, onLock, onSettings, userName
           </button>
         </div>
 
-        {foldersOpen && <FolderTree />}
+        {foldersOpen && <FolderTree selectedFolderId={selectedFolderId} onSelectFolder={onSelectFolder} />}
       </nav>
 
       {/* Sync status indicator and user section */}
