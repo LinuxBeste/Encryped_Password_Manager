@@ -51,7 +51,11 @@ function runMigrations(database: Database.Database): void {
     logger.info(`Running migration v${v}...`);
     database.transaction(() => {
       for (const stmt of statements) {
-        database.exec(stmt);
+        try {
+          database.exec(stmt);
+        } catch (e) {
+          logger.warn(`Migration v${v} statement skipped: ${(e as Error).message}`);
+        }
       }
       database
         .prepare('INSERT OR REPLACE INTO schema_version (version, applied_at) VALUES (?, ?)')

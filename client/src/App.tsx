@@ -16,6 +16,7 @@ import { useVaultStore } from './store/vault.store';
 import { useVault } from './hooks/useVault';
 import { useAutoLock } from './hooks/useAutoLock';
 import { useSettings } from './hooks/useSettings';
+import { useSettingsStore } from './store/settings.store';
 import { initApi, setTokens, login as apiLogin } from './services/api.service';
 import { KeyRound } from 'lucide-react';
 import type { VaultEntry } from './types';
@@ -28,6 +29,7 @@ export default function App() {
   const { loadVault, createEntry, editEntry, favoriteEntry, deleteEntry } = useVault();
   const settings = useSettings();
 
+  const confirmBeforeDelete = useSettingsStore((s) => s.settings.ui.confirmBeforeDelete);
   const [showSettings, setShowSettings] = useState(false);
 
   useSettings();
@@ -74,6 +76,13 @@ export default function App() {
       selectEntry(null);
     }
   }, [selectedEntry, selectEntry, setPanelView]);
+
+  // Delete entry with optional confirmation
+  const handleDeleteEntry = useCallback((id: string) => {
+    if (confirmBeforeDelete && !window.confirm('Delete this entry? This cannot be undone.')) return;
+    deleteEntry(id);
+    if (selectedEntry?.id === id) selectEntry(null);
+  }, [confirmBeforeDelete, deleteEntry, selectedEntry, selectEntry]);
 
   // Lock the vault
   const handleLock = useCallback(() => {
@@ -208,6 +217,7 @@ export default function App() {
               key={selectedEntry?.id || 'new'}
               entry={selectedEntry}
               folders={folders}
+              defaultFolderId={selectedFolderId}
               onSave={handleSaveEntry}
               onCancel={handleCancelEdit}
             />
@@ -215,7 +225,7 @@ export default function App() {
             <DetailPanel
               entry={selectedEntry}
               onEdit={() => setPanelView('editor')}
-              onDelete={() => { deleteEntry(selectedEntry.id); selectEntry(null); }}
+              onDelete={() => handleDeleteEntry(selectedEntry.id)}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-text-muted">
@@ -241,10 +251,7 @@ export default function App() {
             { id: 'copy-username', label: 'Copy Username', shortcut: '⌘B', onClick: handleCopyUsername },
             { id: 'sep1', separator: true, label: '', onClick: () => {} },
             { id: 'favorite', label: 'Toggle Favorite', onClick: () => favoriteEntry(contextMenu.entry.id) },
-            { id: 'delete', label: 'Delete', danger: true, onClick: () => {
-              deleteEntry(contextMenu.entry.id);
-              if (selectedEntry?.id === contextMenu.entry.id) selectEntry(null);
-            } },
+            { id: 'delete', label: 'Delete', danger: true, onClick: () => handleDeleteEntry(contextMenu.entry.id) },
           ]}
         />
       )}

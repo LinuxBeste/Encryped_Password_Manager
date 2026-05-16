@@ -1,5 +1,5 @@
 // Latest schema version number
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 // Schema migrations keyed by version number
 export const migrations: Record<number, string[]> = {
@@ -33,7 +33,8 @@ export const migrations: Record<number, string[]> = {
       name_encrypted BLOB NOT NULL,
       parent_id TEXT,
       sort_order INTEGER NOT NULL DEFAULT 0,
-      created_at INTEGER NOT NULL
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER
     )`,
     `CREATE TABLE IF NOT EXISTS entries (
       id TEXT PRIMARY KEY,
@@ -86,5 +87,8 @@ export const migrations: Record<number, string[]> = {
     `CREATE INDEX IF NOT EXISTS idx_audit_log_user_id ON audit_log(user_id)`,
     `CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log(timestamp)`,
     `CREATE INDEX IF NOT EXISTS idx_vaults_user_id ON vaults(user_id)`,
+  ],
+  2: [
+    `ALTER TABLE folders ADD COLUMN updated_at INTEGER`,
   ],
 };

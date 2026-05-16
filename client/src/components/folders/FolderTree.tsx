@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Folder, FolderOpen, MoreHorizontal, Plus, Check, X, Pencil, Trash2 } from 'lucide-react';
 import { useVaultStore } from '@/store/vault.store';
 import { useVault } from '@/hooks/useVault';
+import { useSettingsStore } from '@/store/settings.store';
 import { ContextMenu } from '../ui/ContextMenu';
 
 interface FolderTreeProps {
@@ -13,6 +14,7 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
   const folders = useVaultStore((s) => s.folders);
   const entries = useVaultStore((s) => s.entries);
   const { createFolder, renameFolder, deleteFolder } = useVault();
+  const confirmBeforeDelete = useSettingsStore((s) => s.settings.ui.confirmBeforeDelete);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState('');
@@ -59,8 +61,10 @@ export function FolderTree({ selectedFolderId, onSelectFolder }: FolderTreeProps
   };
 
   const handleDelete = async (folderId: string) => {
+    if (confirmBeforeDelete && !window.confirm('Delete this folder? Entries will be moved to root.')) return;
     setContextMenu(null);
     await deleteFolder(folderId);
+    if (selectedFolderId === folderId) onSelectFolder?.(null);
   };
 
   const handleContextMenu = (e: React.MouseEvent, folderId: string) => {

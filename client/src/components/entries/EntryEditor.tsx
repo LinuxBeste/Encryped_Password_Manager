@@ -11,19 +11,20 @@ import { scorePassword } from '@/utils/password';
 interface EntryEditorProps {
   entry?: VaultEntry | null;
   folders: { id: string; name: string }[];
+  defaultFolderId?: string | null;
   onSave: (data: Partial<VaultEntry>) => void;
   onCancel: () => void;
 }
 
 // Create/edit form for a vault entry
-export function EntryEditor({ entry, folders, onSave, onCancel }: EntryEditorProps) {
+export function EntryEditor({ entry, folders, defaultFolderId, onSave, onCancel }: EntryEditorProps) {
   const [title, setTitle] = useState(entry?.title || '');
   const [type, setType] = useState<EntryType>(entry?.type || 'password');
   const [username, setUsername] = useState(entry?.username || '');
   const [password, setPassword] = useState(entry?.password || '');
   const [url, setUrl] = useState(entry?.url || '');
   const [notes, setNotes] = useState(entry?.notes || '');
-  const [folderId, setFolderId] = useState(entry?.folderId || '');
+  const [folderId, setFolderId] = useState(entry?.folderId || defaultFolderId || '');
   const [showGenerator, setShowGenerator] = useState(false);
 
   const passwordScore = password ? scorePassword(password).score : 0;

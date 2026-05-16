@@ -54,14 +54,12 @@ export function useVault() {
     return localEntry;
   }, [addEntry, vaultId]);
 
-  // Update entry via API and local store
+  // Update entry locally then sync to API
   const editEntry = useCallback(async (id: string, updates: Partial<VaultEntry>) => {
+    updateEntry(id, updates);
     try {
       const api = getApi();
-      const response = await api.put(`/entries/${id}`, updates);
-      if (response.data.success) {
-        updateEntry(id, updates);
-      }
+      await api.put(`/entries/${id}`, updates);
     } catch { /* ignore */ }
   }, [updateEntry]);
 

@@ -201,7 +201,7 @@ export function syncEntries(userId: string, request: SyncRequest): ApiResponse<S
     .all(userId, request.lastSyncAt) as Entry[];
 
   const folders = db
-    .prepare('SELECT * FROM folders WHERE user_id = ? AND created_at > ? ORDER BY sort_order ASC')
+    .prepare('SELECT * FROM folders WHERE user_id = ? AND updated_at > ? ORDER BY sort_order ASC')
     .all(userId, request.lastSyncAt) as any[];
 
   return {

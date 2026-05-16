@@ -104,8 +104,9 @@ router.put(
       return;
     }
 
-    db.prepare('UPDATE folders SET name_encrypted = ? WHERE id = ? AND user_id = ?').run(
+    db.prepare('UPDATE folders SET name_encrypted = ?, updated_at = ? WHERE id = ? AND user_id = ?').run(
       req.body.name_encrypted,
+      Date.now(),
       req.params.id,
       req.userId!,
     );
