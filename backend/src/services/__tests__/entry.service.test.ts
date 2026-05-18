@@ -334,8 +334,8 @@ describe('EntryService — sync', () => {
     const { uid, vid } = seedUserAndVault();
     const db = getDb();
     db.prepare(
-      'INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-    ).run(uuidv4(), vid, uid, Buffer.from('f'), 0, 1);
+      'INSERT INTO folders (id, vault_id, user_id, name_encrypted, sort_order, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    ).run(uuidv4(), vid, uid, Buffer.from('f'), 0, 1, 1);
     const result = syncEntries(uid, { lastSyncAt: 0, deletedIds: [] });
     expect(result.data!.folders).toHaveLength(1);
   });
