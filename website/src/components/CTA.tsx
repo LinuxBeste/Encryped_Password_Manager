@@ -22,7 +22,7 @@ export default function CTA() {
   }, [])
 
   return (
-    <section ref={ref} className="py-24 px-6 border-t border-border">
+    <section id="download" ref={ref} className="py-24 px-6 border-t border-border">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="reveal text-3xl sm:text-4xl font-bold tracking-tight text-ink">
           Ready to take control?
@@ -32,7 +32,7 @@ export default function CTA() {
         </p>
         <div className="reveal-scale reveal-delay-2 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="https://github.com/anomalyco/vaultlock/releases"
+            href="https://github.com/LinuxBeste/Encryped_Password_Manager/releases"
             target="_blank"
             rel="noopener noreferrer"
             className="animate-pulse-glow px-8 py-3.5 bg-ink text-paper rounded-xl font-medium text-base hover:bg-ink/90 transition-colors"
@@ -40,7 +40,7 @@ export default function CTA() {
             Download Now
           </a>
           <a
-            href="https://github.com/anomalyco/vaultlock"
+            href="https://github.com/LinuxBeste/Encryped_Password_Manager"
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-3.5 border border-border rounded-xl font-medium text-base text-ink hover:bg-surface transition-colors"

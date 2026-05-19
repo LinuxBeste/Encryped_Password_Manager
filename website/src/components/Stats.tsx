@@ -105,7 +105,7 @@ export default function Stats() {
   }, [])
 
   return (
-    <section ref={ref} className="py-24 px-6 border-t border-border bg-surface">
+    <section id="stats" ref={ref} className="py-24 px-6 border-t border-border bg-surface">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="reveal text-3xl sm:text-4xl font-bold tracking-tight text-ink">

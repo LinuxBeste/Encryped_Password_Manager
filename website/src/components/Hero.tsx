@@ -59,7 +59,7 @@ export default function Hero() {
             Explore Features
           </a>
           <a
-            href="https://github.com/anomalyco/vaultlock"
+            href="https://github.com/LinuxBeste/Encryped_Password_Manager"
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-3.5 border border-border rounded-xl font-medium text-base text-ink hover:bg-surface transition-colors"
@@ -67,7 +67,7 @@ export default function Hero() {
             View on GitHub
           </a>
           <a
-            href="https://github.com/anomalyco/vaultlock/releases"
+            href="https://github.com/LinuxBeste/Encryped_Password_Manager/releases"
             target="_blank"
             rel="noopener noreferrer"
             className="px-8 py-3.5 border border-border rounded-xl font-medium text-base text-muted hover:text-ink hover:bg-surface transition-colors"

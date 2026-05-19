@@ -1,6 +1,6 @@
 # VaultLock — Landing Page
 
-Marketing website for [VaultLock](https://github.com/anomalyco/vaultlock), a zero-knowledge, offline-first encrypted password manager.
+Marketing website for [VaultLock](https://github.com/LinuxBeste/Encryped_Password_Manager), a zero-knowledge, offline-first encrypted password manager.
 
 Built with React 19, TypeScript, Vite, and Tailwind CSS 4.
 

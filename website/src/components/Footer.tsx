@@ -13,8 +13,8 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-6 text-sm text-muted">
             <a href="#features" className="hover:text-ink transition-colors">Features</a>
-            <a href="https://github.com/anomalyco/vaultlock" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">GitHub</a>
-            <a href="https://github.com/anomalyco/vaultlock/releases" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">Releases</a>
+            <a href="https://github.com/LinuxBeste/Encryped_Password_Manager" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">GitHub</a>
+            <a href="https://github.com/LinuxBeste/Encryped_Password_Manager/releases" target="_blank" rel="noopener noreferrer" className="hover:text-ink transition-colors">Releases</a>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted">
