@@ -10,6 +10,7 @@ vaultlock/
 ├── client/           Desktop app (Electron, React 18, Vite, Tailwind CSS, Zustand)
 ├── docs/             Documentation
 │   └── backend/      API reference, security model, deployment guide
+├── website/          Landing page (React 19, Vite, Tailwind CSS 4)
 ├── docker-compose.yml         Production deployment
 ├── docker-compose.dev.yml     Development with hot reload
 └── .github/          CI/CD workflows
@@ -36,6 +37,14 @@ cd client
 pnpm install
 pnpm dev:server             # Web-only dev on http://localhost:5173
 pnpm dev                    # Full Electron app
+```
+
+### Website (Landing Page)
+
+```bash
+cd website
+pnpm install
+pnpm dev                    # Vite dev server on http://localhost:5173
 ```
 
 ## Backend
