@@ -161,6 +161,21 @@ router.delete(
   },
 );
 
+// Check if TOTP is currently enabled for the authenticated user
+router.get('/totp/status', authenticate, (req: AuthRequest, res: Response) => {
+  const db = getDb();
+  const user = db.prepare('SELECT totp_secret FROM users WHERE id = ?').get(req.userId) as
+    | { totp_secret: string | null }
+    | undefined;
+
+  if (!user) {
+    res.status(404).json({ success: false, error: 'User not found' });
+    return;
+  }
+
+  res.json({ success: true, data: { enabled: !!user.totp_secret } });
+});
+
 // Generate TOTP secret and return QR code for authenticator app setup
 router.post('/totp/setup', authenticate, rateLimitAuth, async (req: AuthRequest, res: Response) => {
   const secret = authenticator.generateSecret();

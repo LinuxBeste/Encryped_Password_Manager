@@ -24,18 +24,31 @@ export function getAccessToken(): string | null {
   return accessToken;
 }
 
+// Read a cookie value by name
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? match[1] : null;
+}
+
 // Create an Axios instance with auth interceptor and token refresh
 function createApi(baseURL: string): AxiosInstance {
   const instance = axios.create({
     baseURL,
     timeout: 15000,
+    withCredentials: true,
     headers: { 'Content-Type': 'application/json' },
   });
 
-  // Attach Bearer token to every request
+  // Attach Bearer token and CSRF token to every request
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    if (accessToken && config.headers) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if (config.headers) {
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
+      const csrfToken = getCookie('csrf-token');
+      if (csrfToken && config.method && !['get', 'head', 'options'].includes(config.method)) {
+        config.headers['x-csrf-token'] = csrfToken;
+      }
     }
     return config;
   });
@@ -133,5 +146,29 @@ export async function login(
     `${baseURL}/auth/login`,
     { email, masterPassword }
   );
+  return response.data;
+}
+
+// Get TOTP 2FA status for the authenticated user
+export async function getTotpStatus(api: AxiosInstance): Promise<ApiResponse<{ enabled: boolean }>> {
+  const response = await api.get<ApiResponse<{ enabled: boolean }>>('/auth/totp/status');
+  return response.data;
+}
+
+// Set up TOTP 2FA — generates a secret and returns QR code
+export async function setupTotp(api: AxiosInstance): Promise<ApiResponse<{ secret: string; qrCode: string; otpauth: string }>> {
+  const response = await api.post<ApiResponse<{ secret: string; qrCode: string; otpauth: string }>>('/auth/totp/setup');
+  return response.data;
+}
+
+// Verify a TOTP code to confirm setup
+export async function verifyTotp(api: AxiosInstance, code: string): Promise<ApiResponse<{ verified: boolean }>> {
+  const response = await api.post<ApiResponse<{ verified: boolean }>>('/auth/totp/verify', { code });
+  return response.data;
+}
+
+// Disable/remove TOTP 2FA
+export async function disableTotp(api: AxiosInstance): Promise<ApiResponse> {
+  const response = await api.delete('/auth/totp');
   return response.data;
 }
