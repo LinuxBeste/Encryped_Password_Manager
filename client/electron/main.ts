@@ -28,6 +28,8 @@ function saveSettings(settings: Record<string, unknown>) {
 
 // Creates the main application window
 function createWindow() {
+  const iconPath = path.join(__dirname, '../dist/icon-512.png');
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -36,6 +38,7 @@ function createWindow() {
     frame: true,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     backgroundColor: '#0d1117',
+    icon: fs.existsSync(iconPath) ? iconPath : undefined,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
