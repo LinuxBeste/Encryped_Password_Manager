@@ -9,7 +9,7 @@ export function useVault() {
   const { entries, folders, vaultName, vaultId, setVault, addEntry, updateEntry, removeEntry, toggleFavorite, clearVault } = useVaultStore();
   const user = useAuthStore((s) => s.user);
 
-  // Fetch vault data from API and populate store
+  // Fetch vault data from API and populate store (merges with local-only entries)
   const loadVault = useCallback(async () => {
     if (!user) return;
     try {
@@ -17,7 +17,11 @@ export function useVault() {
       const response = await api.get('/vault');
       if (response.data.success && response.data.data) {
         const { id, name, entries: rawEntries, folders: rawFolders } = response.data.data;
-        setVault(id, name, rawEntries || [], rawFolders || []);
+        const currentEntries = useVaultStore.getState().entries;
+        const serverIds = new Set((rawEntries || []).map((e: VaultEntry) => e.id));
+        const localOnly = currentEntries.filter((e) => !serverIds.has(e.id));
+        const serverEntries = (rawEntries || []).map((e: VaultEntry) => ({ ...e, origin: 'server' as const }));
+        setVault(id, name, [...serverEntries, ...localOnly], rawFolders || []);
       }
     } catch { /* error handled by interceptor */ }
   }, [user, setVault]);
@@ -28,8 +32,8 @@ export function useVault() {
       const api = getApi();
       const response = await api.post('/entries', entry);
       if (response.data.success && response.data.data) {
-        addEntry(response.data.data);
-        return response.data.data;
+        addEntry({ ...response.data.data, origin: 'server' });
+        return { ...response.data.data, origin: 'server' };
       }
     } catch { /* fall through to local add */ }
     const localEntry: VaultEntry = {
@@ -49,6 +53,7 @@ export function useVault() {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       deletedAt: null,
+      origin: 'local',
     };
     addEntry(localEntry);
     return localEntry;
@@ -56,7 +61,8 @@ export function useVault() {
 
   // Update entry locally then sync to API
   const editEntry = useCallback(async (id: string, updates: Partial<VaultEntry>) => {
-    updateEntry(id, updates);
+    const merged = { ...updates, origin: 'server' as const };
+    updateEntry(id, merged);
     try {
       const api = getApi();
       await api.put(`/entries/${id}`, updates);

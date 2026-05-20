@@ -14,6 +14,7 @@ const defaultSettings: Settings = {
     showEntryCountInSidebar: true,
     confirmBeforeDelete: true,
     minimizeToTray: true,
+    showSource: 'all',
   },
   security: {
     autoLockTimeout: 5 * 60 * 1000,

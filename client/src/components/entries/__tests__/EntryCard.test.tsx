@@ -21,6 +21,7 @@ const baseEntry: VaultEntry = {
   createdAt: 1000,
   updatedAt: Date.now(),
   deletedAt: null,
+  origin: 'server',
 };
 
 describe('EntryCard', () => {

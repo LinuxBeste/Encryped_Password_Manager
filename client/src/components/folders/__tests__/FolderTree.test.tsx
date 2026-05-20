@@ -45,6 +45,7 @@ describe('FolderTree', () => {
           showEntryCountInSidebar: true,
           confirmBeforeDelete: true,
           minimizeToTray: true,
+          showSource: 'all',
         },
         security: { autoLockTimeout: 300000, autoLockOnSleep: true, clipboardClearTimeout: 30000, biometricUnlock: false, failedAttemptsBeforeLockout: 5 },
         generator: { defaultLength: 20, useUppercase: true, useLowercase: true, useNumbers: true, useSymbols: true, excludeAmbiguous: true, useWords: false, wordSeparator: '-', capitalizeWords: true, includeNumber: true, wordCount: 4 },
@@ -69,7 +70,7 @@ describe('FolderTree', () => {
   it('shows entry count for each folder', () => {
     useVaultStore.setState({
       folders: [baseFolder()],
-      entries: [{ id: 'e1', vaultId: 'v1', folderId: 'f1', type: 'password', title: 'Test', username: '', password: '', url: '', notes: '', totpSecret: null, tags: [], customFields: [], favorite: false, createdAt: 0, updatedAt: 0, deletedAt: null }],
+      entries: [{ id: 'e1', vaultId: 'v1', folderId: 'f1', type: 'password', title: 'Test', username: '', password: '', url: '', notes: '', totpSecret: null, tags: [], customFields: [], favorite: false, createdAt: 0, updatedAt: 0, deletedAt: null, origin: 'server' }],
     });
     render(<FolderTree />);
     const counts = screen.getAllByText('1');

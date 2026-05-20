@@ -30,9 +30,17 @@ export default function App() {
   const settings = useSettings();
 
   const confirmBeforeDelete = useSettingsStore((s) => s.settings.ui.confirmBeforeDelete);
+  const showSource = useSettingsStore((s) => s.settings.ui.showSource);
   const [showSettings, setShowSettings] = useState(false);
 
   useSettings();
+
+  // Re-initialize API on mount if authenticated from persisted session
+  useEffect(() => {
+    if (isAuthenticated && !isFirstRun) {
+      initApi('http://localhost:3000/api');
+    }
+  }, []);
 
   // Unlock by authenticating with the server
   const handleUnlock = useCallback(async (password: string) => {
@@ -109,11 +117,14 @@ export default function App() {
     }
   }, [isAuthenticated, isLocked, isFirstRun, loadVault]);
 
-  // Filter entries based on selected folder and navigation category
+  // Filter entries based on selected folder, navigation category, and source
   const filteredEntries = useMemo(() => {
     let result = entries;
     if (selectedFolderId) {
       result = result.filter((e) => e.folderId === selectedFolderId);
+    }
+    if (showSource !== 'all') {
+      result = result.filter((e) => e.origin === showSource);
     }
     switch (selectedNav) {
       case 'favorites':
@@ -131,7 +142,7 @@ export default function App() {
       default:
         return result;
     }
-  }, [selectedNav, selectedFolderId, entries]);
+  }, [selectedNav, selectedFolderId, entries, showSource]);
 
   // Show context menu on right-click
   const handleEntryContextMenu = useCallback((e: React.MouseEvent, entry: VaultEntry) => {

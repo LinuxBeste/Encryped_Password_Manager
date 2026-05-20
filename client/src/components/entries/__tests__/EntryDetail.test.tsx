@@ -21,6 +21,7 @@ const baseEntry: VaultEntry = {
   createdAt: 1000,
   updatedAt: 2000,
   deletedAt: null,
+  origin: 'server',
 };
 
 Object.assign(navigator, {

@@ -33,6 +33,7 @@ const mockEntry = (overrides: Partial<VaultEntry> = {}): VaultEntry => ({
   createdAt: 1000,
   updatedAt: 1000,
   deletedAt: null,
+  origin: 'server',
   ...overrides,
 });
 

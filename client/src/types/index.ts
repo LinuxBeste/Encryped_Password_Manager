@@ -16,6 +16,7 @@ export interface VaultEntry {
   createdAt: number;
   updatedAt: number;
   deletedAt: number | null;
+  origin: 'local' | 'server';
 }
 
 // Supported entry type categories
@@ -82,6 +83,7 @@ export interface UISettings {
   showEntryCountInSidebar: boolean;
   confirmBeforeDelete: boolean;
   minimizeToTray: boolean;
+  showSource: 'all' | 'server' | 'local';
 }
 
 // Available accent color options

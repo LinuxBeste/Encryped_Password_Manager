@@ -12,14 +12,14 @@ const mockEntries: VaultEntry[] = [
     title: 'Gmail', username: 'user@gmail.com', password: 'pass1',
     url: 'https://gmail.com', notes: '', totpSecret: null,
     tags: ['google'], customFields: [], favorite: false,
-    createdAt: 1000, updatedAt: 1000, deletedAt: null,
+    createdAt: 1000, updatedAt: 1000, deletedAt: null, origin: 'server',
   },
   {
     id: '2', vaultId: 'v1', folderId: null, type: 'note',
     title: 'Secret Note', username: '', password: '',
     url: '', notes: 'my secret', totpSecret: null,
     tags: [], customFields: [], favorite: false,
-    createdAt: 1000, updatedAt: 1000, deletedAt: null,
+    createdAt: 1000, updatedAt: 1000, deletedAt: null, origin: 'server',
   },
 ];
 

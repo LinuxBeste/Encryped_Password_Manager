@@ -16,6 +16,24 @@ interface EntryEditorProps {
   onCancel: () => void;
 }
 
+// Fields and labels shown per entry type
+const TYPE_FIELDS: Record<EntryType, {
+  showPassword: boolean;
+  showUsername: boolean;
+  showUrl: boolean;
+  showNotes: boolean;
+  usernameLabel: string;
+  urlLabel: string;
+  passwordLabel: string;
+  notesLabel: string;
+}> = {
+  password:     { showPassword: true,  showUsername: true,  showUrl: true,  showNotes: true,  usernameLabel: 'Username',            urlLabel: 'URL',                     passwordLabel: 'Password',     notesLabel: 'Notes' },
+  note:         { showPassword: false, showUsername: false, showUrl: false, showNotes: true,  usernameLabel: 'Username',            urlLabel: 'URL',                     passwordLabel: 'Password',     notesLabel: 'Notes' },
+  'credit-card':{ showPassword: true,  showUsername: true,  showUrl: true,  showNotes: true,  usernameLabel: 'Card Number',         urlLabel: 'Expiry',                  passwordLabel: 'PIN',          notesLabel: 'CVV / Notes' },
+  identity:     { showPassword: false, showUsername: true,  showUrl: true,  showNotes: true,  usernameLabel: 'Full Name',           urlLabel: 'Email / Website',         passwordLabel: 'Password',     notesLabel: 'Notes' },
+  'ssh-key':    { showPassword: true,  showUsername: true,  showUrl: true,  showNotes: true,  usernameLabel: 'Key Name / Username', urlLabel: 'Host / URL',              passwordLabel: 'Passphrase',   notesLabel: 'Private Key' },
+};
+
 // Create/edit form for a vault entry
 export function EntryEditor({ entry, folders, defaultFolderId, onSave, onCancel }: EntryEditorProps) {
   const [title, setTitle] = useState(entry?.title || '');
@@ -27,6 +45,7 @@ export function EntryEditor({ entry, folders, defaultFolderId, onSave, onCancel 
   const [folderId, setFolderId] = useState(entry?.folderId || defaultFolderId || '');
   const [showGenerator, setShowGenerator] = useState(false);
 
+  const fields = TYPE_FIELDS[type];
   const passwordScore = password ? scorePassword(password).score : 0;
 
   // Collect form data and call onSave
@@ -83,34 +102,45 @@ export function EntryEditor({ entry, folders, defaultFolderId, onSave, onCancel 
         />
 
         {/* Password field with generator button */}
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <PasswordField
-              value={password}
-              onChange={setPassword}
-              showStrength
-              strengthScore={passwordScore}
-            />
+        {fields.showPassword && (
+          <div>
+            <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1.5 block">{fields.passwordLabel}</label>
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <PasswordField
+                  value={password}
+                  onChange={setPassword}
+                  showStrength
+                  strengthScore={passwordScore}
+                />
+              </div>
+              <Button variant="secondary" size="md" onClick={() => setShowGenerator(true)}>
+                <Wand2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-          <Button variant="secondary" size="md" onClick={() => setShowGenerator(true)}>
-            <Wand2 className="w-4 h-4" />
-          </Button>
-        </div>
+        )}
 
-        <Input label="Username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username@example.com" />
-        <Input label="URL" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" />
+        {fields.showUsername && (
+          <Input label={fields.usernameLabel} value={username} onChange={(e) => setUsername(e.target.value)} placeholder={type === 'credit-card' ? '•••• •••• •••• ••••' : 'username@example.com'} />
+        )}
+        {fields.showUrl && (
+          <Input label={fields.urlLabel} value={url} onChange={(e) => setUrl(e.target.value)} placeholder={type === 'credit-card' ? 'MM/YY' : 'https://example.com'} />
+        )}
 
         {/* Notes textarea */}
-        <div>
-          <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1.5 block">Notes</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={5}
-            className="w-full px-3 py-2 rounded-md border border-border bg-panel text-text-primary text-body focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none"
-            placeholder="Add notes..."
-          />
-        </div>
+        {fields.showNotes && (
+          <div>
+            <label className="text-caption text-text-muted uppercase tracking-wide font-medium mb-1.5 block">{fields.notesLabel}</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={5}
+              className="w-full px-3 py-2 rounded-md border border-border bg-panel text-text-primary text-body focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent resize-none"
+              placeholder="Add notes..."
+            />
+          </div>
+        )}
 
         {/* Folder selector */}
         {folders.length > 0 && (

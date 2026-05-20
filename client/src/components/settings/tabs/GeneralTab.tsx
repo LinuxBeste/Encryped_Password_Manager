@@ -39,6 +39,17 @@ export function GeneralTab() {
       <Toggle checked={settings.ui.showEntryCountInSidebar} onChange={(v) => updateUI({ showEntryCountInSidebar: v })} label="Show entry count in sidebar" />
       <Toggle checked={settings.ui.confirmBeforeDelete} onChange={(v) => updateUI({ confirmBeforeDelete: v })} label="Confirm before deleting" />
       <Toggle checked={settings.ui.minimizeToTray} onChange={(v) => updateUI({ minimizeToTray: v })} label="Minimize to tray on close" />
+
+      <Select
+        label="Show entries from"
+        value={settings.ui.showSource}
+        onChange={(e) => updateUI({ showSource: e.target.value as 'all' | 'server' | 'local' })}
+        options={[
+          { value: 'all', label: 'Both (local & server)' },
+          { value: 'server', label: 'Server only' },
+          { value: 'local', label: 'Local only' },
+        ]}
+      />
     </div>
   );
 }

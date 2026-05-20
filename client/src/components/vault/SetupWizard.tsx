@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Shield, Server, Mail, Key, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -32,7 +32,16 @@ export function SetupWizard({ onComplete }: SetupWizardProps) {
   const [confirmedRecovery, setConfirmedRecovery] = useState(false);
 
   const passwordScore = password ? scorePassword(password).score : 0;
-  const recoveryPhrase = RECOVERY_WORDS.slice(0, 12).join(' ');
+  const recoveryPhrase = useMemo(() => {
+    const words = [...RECOVERY_WORDS];
+    const indices = new Uint32Array(words.length);
+    crypto.getRandomValues(indices);
+    for (let i = words.length - 1; i > 0; i--) {
+      const j = indices[i] % (i + 1);
+      [words[i], words[j]] = [words[j], words[i]];
+    }
+    return words.slice(0, 12).join(' ');
+  }, []);
 
   // Test server connection and update status
   const handleTestConnection = useCallback(async () => {
