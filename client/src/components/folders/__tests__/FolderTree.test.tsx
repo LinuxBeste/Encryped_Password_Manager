@@ -47,7 +47,7 @@ describe('FolderTree', () => {
           minimizeToTray: true,
           showSource: 'all',
         },
-        security: { autoLockTimeout: 300000, autoLockOnSleep: true, clipboardClearTimeout: 30000, biometricUnlock: false, failedAttemptsBeforeLockout: 5 },
+        security: { autoLockTimeout: 300000, autoLockOnSleep: true, clipboardClearTimeout: 30000, biometricUnlock: false, failedAttemptsBeforeLockout: 5, localPasswordCheck: true },
         generator: { defaultLength: 20, useUppercase: true, useLowercase: true, useNumbers: true, useSymbols: true, excludeAmbiguous: true, useWords: false, wordSeparator: '-', capitalizeWords: true, includeNumber: true, wordCount: 4 },
         sync: { serverUrl: '', syncInterval: 300000, conflictResolution: 'server-wins' },
         backup: { autoBackup: 'never', backupLocation: '', keepLastN: 5 },

@@ -22,6 +22,7 @@ const defaultSettings: Settings = {
     clipboardClearTimeout: 30000,
     biometricUnlock: false,
     failedAttemptsBeforeLockout: 5,
+    localPasswordCheck: true,
   },
   generator: {
     defaultLength: 20,

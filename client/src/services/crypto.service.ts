@@ -106,6 +106,54 @@ export function generateEncryptionKey(): string {
   return bufferToBase64(key.buffer);
 }
 
+// Encrypt a known plaintext with the derived key to create a password verifier
+export async function createPasswordVerifier(
+  masterPassword: string,
+  email: string,
+): Promise<{ verifier: string; salt: string }> {
+  const salt = generateSalt();
+  const { key } = await deriveKey(masterPassword, email, salt);
+  const plaintext = 'VaultLock:OK';
+  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
+  const encoded = new TextEncoder().encode(plaintext);
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    encoded,
+  );
+  return {
+    verifier: JSON.stringify({
+      iv: bufferToBase64(iv.buffer as ArrayBuffer),
+      ciphertext: bufferToBase64(encrypted),
+    }),
+    salt: bufferToBase64(salt.buffer as ArrayBuffer),
+  };
+}
+
+// Verify a master password by trying to decrypt the stored verifier
+export async function checkPassword(
+  masterPassword: string,
+  email: string,
+  verifier: string,
+  salt: string,
+): Promise<boolean> {
+  try {
+    const { iv, ciphertext } = JSON.parse(verifier);
+    const saltBytes = new Uint8Array(base64ToBuffer(salt));
+    const { key } = await deriveKey(masterPassword, email, saltBytes);
+    const ivBytes = new Uint8Array(base64ToBuffer(iv));
+    const ciphertextBytes = new Uint8Array(base64ToBuffer(ciphertext));
+    await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: ivBytes },
+      key,
+      ciphertextBytes,
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // Clear sensitive data from memory (best-effort).
 // CryptoKey key material is stored in an opaque backing store inaccessible
 // from JavaScript; the algorithm property is metadata only and overwriting

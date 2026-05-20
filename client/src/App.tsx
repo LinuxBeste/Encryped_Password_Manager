@@ -18,6 +18,7 @@ import { useAutoLock } from './hooks/useAutoLock';
 import { useSettings } from './hooks/useSettings';
 import { useSettingsStore } from './store/settings.store';
 import { initApi, setTokens, register as apiRegister, login as apiLogin } from './services/api.service';
+import { createPasswordVerifier, checkPassword } from './services/crypto.service';
 import { KeyRound } from 'lucide-react';
 import type { VaultEntry } from './types';
 
@@ -42,23 +43,27 @@ export default function App() {
     }
   }, []);
 
-  // Unlock by authenticating with the server
+  // Unlock by verifying master password locally, then sync with server
   const handleUnlock = useCallback(async (password: string) => {
-    const user = useAuthStore.getState().user;
+    const { user, passwordVerifier, passwordSalt } = useAuthStore.getState();
+    const { localPasswordCheck } = useSettingsStore.getState().settings.security;
     if (!user?.email) return false;
+
+    if (localPasswordCheck && passwordVerifier && passwordSalt) {
+      const ok = await checkPassword(password, user.email, passwordVerifier, passwordSalt);
+      if (!ok) return false;
+    }
+
+    unlock();
+    const url = 'http://localhost:3000/api';
+    initApi(url);
     try {
-      const url = 'http://localhost:3000/api';
       const result = await apiLogin(url, user.email, password);
       if (result.success && result.data) {
-        unlock();
-        initApi(url);
         setTokens(result.data.token, result.data.refreshToken);
-        return true;
       }
-      return false;
-    } catch {
-      return false;
-    }
+    } catch { /* server unreachable — offline mode */ }
+    return true;
   }, [unlock]);
 
   // Switch to editor view for adding a new entry
@@ -103,6 +108,10 @@ export default function App() {
     try {
       await apiRegister(serverUrl, email, password);
     } catch { /* user may already exist or server unreachable */ }
+
+    const { verifier, salt } = await createPasswordVerifier(password, email);
+    useAuthStore.getState().setPasswordVerifier(verifier, salt);
+
     try {
       const result = await apiLogin(serverUrl, email, password);
       if (result.success && result.data) {

@@ -45,6 +45,8 @@ export function SecurityTab() {
 
       <Toggle checked={settings.security.biometricUnlock} onChange={(v) => updateSecurity({ biometricUnlock: v })} label="Biometric unlock" />
 
+      <Toggle checked={settings.security.localPasswordCheck} onChange={(v) => updateSecurity({ localPasswordCheck: v })} label="Require master password to unlock (offline)" />
+
       <Select
         label="Failed attempts before lockout"
         value={String(settings.security.failedAttemptsBeforeLockout)}

@@ -96,6 +96,7 @@ export interface SecuritySettings {
   clipboardClearTimeout: number;
   biometricUnlock: boolean;
   failedAttemptsBeforeLockout: number;
+  localPasswordCheck: boolean;
 }
 
 // Password generator configuration
