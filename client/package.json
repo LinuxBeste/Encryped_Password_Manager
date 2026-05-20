@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "VaultLock – Premium Offline Encrypted Password Manager",
   "private": true,
+  "author": {
+    "name": "VaultLock",
+    "email": "support@vaultlock.app"
+  },
+  "homepage": "https://vaultlock.app",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "tsc --project tsconfig.electron.json && NODE_ENV=development vite build && electron .",
     "start": "tsc --project tsconfig.electron.json && NODE_ENV=production vite build && electron .",
     "dev:server": "vite",
     "build": "tsc --noEmit && vite build && tsc --project tsconfig.electron.json",
-    "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win",
-    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac --config electron-builder.config.ts",
+    "build:win": "electron-builder --win --config electron-builder.config.ts",
+    "build:linux": "electron-builder --linux --config electron-builder.config.ts",
     "lint": "eslint src/ electron/ --ext .ts,.tsx",
     "typecheck": "tsc --noEmit && tsc --project tsconfig.electron.json --noEmit",
     "test": "vitest run",

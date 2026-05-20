@@ -286,9 +286,9 @@ The title bar has custom minimize/maximize/close buttons on all platforms. On ma
 | `pnpm build` | `tsc --noEmit` (typecheck) → `vite build` → `tsc` (electron) |
 | `pnpm lint` | `eslint src/ electron/ --ext .ts,.tsx` |
 | `pnpm typecheck` | `tsc --noEmit` (app + electron) |
-| `pnpm build:mac` | `electron-builder --mac` (dmg + zip) |
-| `pnpm build:win` | `electron-builder --win` (NSIS) |
-| `pnpm build:linux` | `electron-builder --linux` (AppImage + deb) |
+| `pnpm build:mac` | `electron-builder --mac --config electron-builder.config.ts` (dmg + zip) |
+| `pnpm build:win` | `electron-builder --win --config electron-builder.config.ts` (NSIS) |
+| `pnpm build:linux` | `electron-builder --linux --config electron-builder.config.ts` (AppImage + deb + pacman) |
 
 ## Common Tasks
 

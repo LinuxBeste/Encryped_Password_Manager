@@ -94,7 +94,7 @@ Four Zustand stores, all using `zustand/middleware/persist` for localStorage sur
 | `pnpm lint` | ESLint on `src/` |
 | `pnpm build:mac` | Package macOS (dmg + zip) |
 | `pnpm build:win` | Package Windows (NSIS) |
-| `pnpm build:linux` | Package Linux (AppImage + deb) |
+| `pnpm build:linux` | Package Linux (AppImage + deb + pacman) |
 
 ## Desktop Features (Electron)
 
@@ -141,10 +141,10 @@ User action → Component → Zustand action → Store update → Re-render
 # Build and package for current platform
 pnpm start
 
-# Package for distribution
-pnpm build:mac
-pnpm build:win
-pnpm build:linux
+# Package for distribution (uses electron-builder.config.ts)
+pnpm build:mac    # macOS (dmg + zip)
+pnpm build:win    # Windows (NSIS)
+pnpm build:linux  # Linux (AppImage + deb + pacman)
 ```
 
 Artifacts are output to `release/`. macOS builds are signed and notarized if `APPLE_ID` and `APPLE_APP_SPECIFIC_PASSWORD` env vars are set.

@@ -35,7 +35,7 @@ const config: Configuration = {
     allowToChangeInstallationDirectory: true,
   },
   linux: {
-    target: ['AppImage', 'deb'],
+    target: ['AppImage', 'deb', 'pacman'],
     artifactName: 'VaultLock-${version}-linux-${arch}.${ext}',
     category: 'Utility',
   },
