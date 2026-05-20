@@ -58,7 +58,7 @@ export function generatePassword(
   };
 }
 
-const WORDS = [
+export const WORDS = [
   'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
   'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
   'acoustic', 'acquire', 'across', 'action', 'actor', 'actress', 'actual', 'adapt',
