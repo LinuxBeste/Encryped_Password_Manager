@@ -97,21 +97,25 @@ export default function App() {
     lock();
   }, [lock]);
 
-  // Complete first-run setup and login
+  // Complete first-run setup and login (falls back to local-only if server is unreachable)
   const handleSetupComplete = useCallback(async (serverUrl: string, email: string, password: string) => {
     initApi(serverUrl);
     try {
       await apiRegister(serverUrl, email, password);
-    } catch { /* user may already exist */ }
-    const result = await apiLogin(serverUrl, email, password);
-    if (result.success && result.data) {
-      login(
-        { id: result.data.userId, email: result.data.email, encryptedVaultKey: '', createdAt: Date.now() },
-        result.data.token,
-        result.data.refreshToken,
-      );
-      setTokens(result.data.token, result.data.refreshToken);
-    }
+    } catch { /* user may already exist or server unreachable */ }
+    try {
+      const result = await apiLogin(serverUrl, email, password);
+      if (result.success && result.data) {
+        login(
+          { id: result.data.userId, email: result.data.email, encryptedVaultKey: '', createdAt: Date.now() },
+          result.data.token,
+          result.data.refreshToken,
+        );
+        setTokens(result.data.token, result.data.refreshToken);
+        return;
+      }
+    } catch { /* fall through to local-only */ }
+    login({ id: email, email, encryptedVaultKey: '', createdAt: Date.now() }, 'local-token', 'local-refresh');
   }, [login]);
 
   // Auto-lock after 5min of inactivity
