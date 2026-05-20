@@ -52,6 +52,7 @@ export async function loginUser(
     token?: string;
     refreshToken?: string;
     totpRequired?: boolean;
+    email2faRequired?: boolean;
   }>
 > {
   const db = getDb();
@@ -67,9 +68,18 @@ export async function loginUser(
   }
 
   if (user.totp_secret) {
+    logger.debug(`TOTP required for user: ${email}`);
     return {
       success: true,
       data: { userId: user.id, email: user.email, totpRequired: true },
+    };
+  }
+
+  if (user.email_2fa_enabled && config.email2faEnabled) {
+    logger.debug(`Email 2FA required for user: ${email}`);
+    return {
+      success: true,
+      data: { userId: user.id, email: user.email, email2faRequired: true },
     };
   }
 
@@ -104,6 +114,26 @@ export function verifyTotpAndLogin(
 
   db.prepare('UPDATE users SET last_login = ? WHERE id = ?').run(Date.now(), userId);
 
+  return { success: true, data: { token, refreshToken } };
+}
+
+// Verify email 2FA and complete login
+export function verifyEmail2faAndLogin(
+  userId: string,
+): ApiResponse<{ token: string; refreshToken: string }> {
+  const db = getDb();
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as User | undefined;
+
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  const token = generateJwt(user);
+  const refreshToken = storeRefreshToken(user.id);
+
+  db.prepare('UPDATE users SET last_login = ? WHERE id = ?').run(Date.now(), userId);
+
+  logger.info(`Email 2FA login complete for user: ${user.email}`);
   return { success: true, data: { token, refreshToken } };
 }
 

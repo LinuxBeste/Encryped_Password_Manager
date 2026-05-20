@@ -11,6 +11,7 @@ import { csrfProtection } from './api/middleware/csrf.middleware';
 import { authenticate, AuthRequest } from './api/middleware/auth.middleware';
 import { rateLimitDefault } from './api/middleware/rateLimit.middleware';
 import { authRouter } from './api/routes/auth.routes';
+import { email2faRouter } from './api/routes/email2fa.routes';
 import { vaultRouter } from './api/routes/vault.routes';
 import { entriesRouter } from './api/routes/entries.routes';
 import { foldersRouter } from './api/routes/folders.routes';
@@ -58,6 +59,14 @@ app.use(cookieParser());
 app.use(express.json({ limit: '5mb' }));
 app.use(csrfProtection);
 
+// Dev request logging
+if (config.nodeEnv === 'development') {
+  app.use((req, _res, next) => {
+    logger.debug(`${req.method} ${req.originalUrl}`);
+    next();
+  });
+}
+
 // Record server start timestamp
 const startTime = Date.now();
 
@@ -86,6 +95,7 @@ app.get('/api/health', (_req, res) => {
 
 // Mount all API route groups
 app.use('/api/auth', authRouter);
+app.use('/api/auth', email2faRouter);
 app.use('/api/vault', vaultRouter);
 app.use('/api/entries', entriesRouter);
 app.use('/api/folders', foldersRouter);

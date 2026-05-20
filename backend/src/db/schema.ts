@@ -1,5 +1,5 @@
 // Latest schema version number
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 // Schema migrations keyed by version number
 export const migrations: Record<number, string[]> = {
@@ -90,5 +90,17 @@ export const migrations: Record<number, string[]> = {
   ],
   2: [
     `ALTER TABLE folders ADD COLUMN updated_at INTEGER`,
+  ],
+  3: [
+    `ALTER TABLE users ADD COLUMN email_2fa_enabled INTEGER NOT NULL DEFAULT 0`,
+    `CREATE TABLE IF NOT EXISTS email_2fa_codes (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      code_hash TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      used INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS idx_email_2fa_codes_user_id ON email_2fa_codes(user_id)`,
   ],
 };

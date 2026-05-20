@@ -62,5 +62,16 @@ export const config = {
   totpEnabled: envStr('TOTP_ENABLED', 'true') === 'true',
   csrfSecret: envStr('CSRF_SECRET', 'change-me-csrf-secret'),
 
+  email2faEnabled: envStr('EMAIL_2FA_ENABLED', 'true') === 'true',
+  email2faCodeLength: envInt('EMAIL_2FA_CODE_LENGTH', 6),
+  email2faCodeExpiryMs: envInt('EMAIL_2FA_CODE_EXPIRY_MS', 5 * 60 * 1000),
+  email2faCooldownMs: envInt('EMAIL_2FA_COOLDOWN_MS', 30 * 1000),
+
+  smtpHost: envStr('SMTP_HOST', ''),
+  smtpPort: envInt('SMTP_PORT', 587),
+  smtpUser: envStr('SMTP_USER', ''),
+  smtpPass: envStr('SMTP_PASS', ''),
+  smtpFrom: envStr('SMTP_FROM', 'noreply@vaultlock.app'),
+
   version: '1.0.0',
 };

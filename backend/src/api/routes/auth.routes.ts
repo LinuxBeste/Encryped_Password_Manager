@@ -15,6 +15,7 @@ import {
 import { logAuditEvent } from '../../services/audit.service';
 import { getDb } from '../../db/db';
 import { config } from '../../utils/config';
+import { logger } from '../../utils/logger';
 
 const router = Router();
 
@@ -53,6 +54,7 @@ const totpVerifySchema = z.object({
 // Register a new user account
 router.post('/register', rateLimitAuth, validate(registerSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
+  logger.debug(`Registration attempt for: ${email}`);
   const result = await registerUser(email, masterPassword);
 
   if (result.success) {
@@ -62,6 +64,9 @@ router.post('/register', rateLimitAuth, validate(registerSchema), async (req, re
       req.ip || '',
       req.headers['user-agent'] || '',
     );
+    logger.info(`User registered: ${email}`);
+  } else {
+    logger.debug(`Registration failed for: ${email} — ${result.error}`);
   }
 
   res.status(result.success ? 201 : 409).json(result);
@@ -70,17 +75,26 @@ router.post('/register', rateLimitAuth, validate(registerSchema), async (req, re
 // Login with email and master password; sets JWT cookie on success
 router.post('/login', rateLimitAuth, validate(loginSchema), async (req, res: Response) => {
   const { email, masterPassword } = req.body;
+  logger.debug(`Login attempt for: ${email}`);
   const result = await loginUser(email, masterPassword);
 
   if (!result.success) {
     logAuditEvent('unknown', 'auth.login.failed', req.ip || '', req.headers['user-agent'] || '', {
       email,
     });
+    logger.debug(`Login failed for: ${email} — ${result.error}`);
     res.status(401).json(result);
     return;
   }
 
   if ((result.data as any)?.totpRequired) {
+    logger.debug(`TOTP required for: ${email}`);
+    res.json(result);
+    return;
+  }
+
+  if ((result.data as any)?.email2faRequired) {
+    logger.debug(`Email 2FA required for: ${email}`);
     res.json(result);
     return;
   }
@@ -94,6 +108,7 @@ router.post('/login', rateLimitAuth, validate(loginSchema), async (req, res: Res
   });
 
   logAuditEvent(data.userId, 'auth.login', req.ip || '', req.headers['user-agent'] || '');
+  logger.info(`Login successful: ${email}`);
   res.json(result);
 });
 

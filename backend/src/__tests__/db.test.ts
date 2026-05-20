@@ -53,6 +53,7 @@ describe('DB — schema & config', () => {
     expect(names).toEqual(
       [
         'audit_log',
+        'email_2fa_codes',
         'entries',
         'folders',
         'refresh_tokens',

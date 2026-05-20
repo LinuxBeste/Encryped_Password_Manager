@@ -5,6 +5,7 @@ import {
   refreshAccessToken,
   logoutUser,
   deleteAccount,
+  verifyEmail2faAndLogin,
 } from '../auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
@@ -248,6 +249,62 @@ describe('AuthService — account deletion', () => {
     expect(db.prepare('SELECT COUNT(*) as c FROM audit_log WHERE user_id = ?').get(userId)).toEqual(
       { c: 0 },
     );
+  });
+});
+
+describe('AuthService — email 2FA', () => {
+  let userId: string;
+
+  beforeEach(async () => {
+    const reg = await registerUser('email2fa@test.com', testPw);
+    userId = reg.data!.userId;
+    const db = getDb();
+    db.prepare('UPDATE users SET email_2fa_enabled = 1 WHERE id = ?').run(userId);
+  });
+
+  it('loginUser returns email2faRequired when enabled', async () => {
+    const result = await loginUser('email2fa@test.com', testPw);
+    expect(result.success).toBe(true);
+    expect(result.data!.email2faRequired).toBe(true);
+    expect(result.data!.token).toBeUndefined();
+  });
+
+  it('loginUser issues JWT when email 2FA is not enabled', async () => {
+    const db = getDb();
+    db.prepare('UPDATE users SET email_2fa_enabled = 0 WHERE id = ?').run(userId);
+    const result = await loginUser('email2fa@test.com', testPw);
+    expect(result.success).toBe(true);
+    expect(result.data!.email2faRequired).toBeUndefined();
+    expect(result.data!.token).toBeDefined();
+  });
+
+  it('verifyEmail2faAndLogin returns JWT and refresh token', async () => {
+    const result = verifyEmail2faAndLogin(userId);
+    expect(result.success).toBe(true);
+    expect(result.data!.token).toBeDefined();
+    expect(result.data!.refreshToken).toBeDefined();
+  });
+
+  it('verifyEmail2faAndLogin updates last_login', async () => {
+    const before = Date.now();
+    verifyEmail2faAndLogin(userId);
+    const db = getDb();
+    const user = db.prepare('SELECT last_login FROM users WHERE id = ?').get(userId) as any;
+    expect(user.last_login).toBeGreaterThanOrEqual(before);
+  });
+
+  it('verifyEmail2faAndLogin fails for non-existent user', () => {
+    const result = verifyEmail2faAndLogin('non-existent-id');
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('not found');
+  });
+
+  it('JWT from verifyEmail2faAndLogin can be decoded', () => {
+    const result = verifyEmail2faAndLogin(userId);
+    const parts = result.data!.token!.split('.');
+    expect(parts).toHaveLength(3);
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+    expect(payload.email).toBe('email2fa@test.com');
   });
 });
 

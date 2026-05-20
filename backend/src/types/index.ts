@@ -6,6 +6,7 @@ export interface User {
   created_at: number;
   last_login: number | null;
   totp_secret: string | null;
+  email_2fa_enabled: number;
 }
 
 // Database row shape for an encrypted vault
@@ -102,6 +103,16 @@ export interface SyncResponse {
   entries: Entry[];
   folders: Folder[];
   syncAt: number;
+}
+
+// Database row shape for an email 2FA verification code
+export interface Email2faCode {
+  id: string;
+  user_id: string;
+  code_hash: string;
+  expires_at: number;
+  used: number;
+  created_at: number;
 }
 
 // Paginated result wrapper
