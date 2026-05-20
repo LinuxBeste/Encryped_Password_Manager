@@ -106,31 +106,41 @@ export function generateEncryptionKey(): string {
   return bufferToBase64(key.buffer);
 }
 
-// Encrypt a known plaintext with the derived key to create a password verifier
+// Derive raw key bits using PBKDF2 (for password verification)
+async function deriveBits(
+  masterPassword: string,
+  email: string,
+  salt: Uint8Array,
+): Promise<ArrayBuffer> {
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(masterPassword + email),
+    'PBKDF2',
+    false,
+    ['deriveBits'],
+  );
+  return crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: salt as unknown as BufferSource, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    keyMaterial,
+    256,
+  );
+}
+
+// Create a password verifier by storing a PBKDF2-derived hash
 export async function createPasswordVerifier(
   masterPassword: string,
   email: string,
 ): Promise<{ verifier: string; salt: string }> {
   const salt = generateSalt();
-  const { key } = await deriveKey(masterPassword, email, salt);
-  const plaintext = 'VaultLock:OK';
-  const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
-  const encoded = new TextEncoder().encode(plaintext);
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    encoded,
-  );
+  const bits = await deriveBits(masterPassword, email, salt);
   return {
-    verifier: JSON.stringify({
-      iv: bufferToBase64(iv.buffer as ArrayBuffer),
-      ciphertext: bufferToBase64(encrypted),
-    }),
+    verifier: bufferToBase64(bits),
     salt: bufferToBase64(salt.buffer as ArrayBuffer),
   };
 }
 
-// Verify a master password by trying to decrypt the stored verifier
+// Check a master password by re-deriving the hash and comparing
 export async function checkPassword(
   masterPassword: string,
   email: string,
@@ -138,16 +148,15 @@ export async function checkPassword(
   salt: string,
 ): Promise<boolean> {
   try {
-    const { iv, ciphertext } = JSON.parse(verifier);
     const saltBytes = new Uint8Array(base64ToBuffer(salt));
-    const { key } = await deriveKey(masterPassword, email, saltBytes);
-    const ivBytes = new Uint8Array(base64ToBuffer(iv));
-    const ciphertextBytes = new Uint8Array(base64ToBuffer(ciphertext));
-    await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: ivBytes },
-      key,
-      ciphertextBytes,
-    );
+    const bits = await deriveBits(masterPassword, email, saltBytes);
+    const stored = base64ToBuffer(verifier);
+    if (bits.byteLength !== stored.byteLength) return false;
+    const a = new Uint8Array(bits);
+    const b = new Uint8Array(stored);
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
     return true;
   } catch {
     return false;
