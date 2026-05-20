@@ -38,11 +38,11 @@ const features = [
     ),
   },
   {
-    title: "Biometric Unlock",
-    desc: "Unlock your vault with Touch ID or Windows Hello for quick, secure access on supported devices.",
+    title: "Password Generator",
+    desc: "Generate strong, random passwords or memorable passphrases with configurable length, character sets, and strength scoring.",
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.61-.09 5.187-.273 7.5m-2.349 2.394A3.75 3.75 0 0110.5 17.5m0 0c0-1.905.345-3.726.969-5.394m-4.03 11.134A3.75 3.75 0 013 19.5m0 0c0-2.11.328-4.144.937-6.054" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
       </svg>
     ),
   },
