@@ -17,7 +17,7 @@ import { useVault } from './hooks/useVault';
 import { useAutoLock } from './hooks/useAutoLock';
 import { useSettings } from './hooks/useSettings';
 import { useSettingsStore } from './store/settings.store';
-import { initApi, setTokens, login as apiLogin } from './services/api.service';
+import { initApi, setTokens, register as apiRegister, login as apiLogin } from './services/api.service';
 import { KeyRound } from 'lucide-react';
 import type { VaultEntry } from './types';
 
@@ -98,9 +98,20 @@ export default function App() {
   }, [lock]);
 
   // Complete first-run setup and login
-  const handleSetupComplete = useCallback((serverUrl: string, email: string, _password: string) => {
+  const handleSetupComplete = useCallback(async (serverUrl: string, email: string, password: string) => {
     initApi(serverUrl);
-    login({ id: '1', email, encryptedVaultKey: '', createdAt: Date.now() }, 'token', 'refresh');
+    try {
+      await apiRegister(serverUrl, email, password);
+    } catch { /* user may already exist */ }
+    const result = await apiLogin(serverUrl, email, password);
+    if (result.success && result.data) {
+      login(
+        { id: result.data.userId, email: result.data.email, encryptedVaultKey: '', createdAt: Date.now() },
+        result.data.token,
+        result.data.refreshToken,
+      );
+      setTokens(result.data.token, result.data.refreshToken);
+    }
   }, [login]);
 
   // Auto-lock after 5min of inactivity

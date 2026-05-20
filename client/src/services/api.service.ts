@@ -128,8 +128,8 @@ export async function register(
   baseURL: string,
   email: string,
   masterPassword: string
-): Promise<ApiResponse<{ token: string; refreshToken: string }>> {
-  const response = await axios.post<ApiResponse<{ token: string; refreshToken: string }>>(
+): Promise<ApiResponse<{ userId: string }>> {
+  const response = await axios.post<ApiResponse<{ userId: string }>>(
     `${baseURL}/auth/register`,
     { email, masterPassword }
   );
@@ -141,8 +141,8 @@ export async function login(
   baseURL: string,
   email: string,
   masterPassword: string
-): Promise<ApiResponse<{ token: string; refreshToken: string }>> {
-  const response = await axios.post<ApiResponse<{ token: string; refreshToken: string }>>(
+): Promise<ApiResponse<{ userId: string; email: string; token: string; refreshToken: string }>> {
+  const response = await axios.post<ApiResponse<{ userId: string; email: string; token: string; refreshToken: string }>>(
     `${baseURL}/auth/login`,
     { email, masterPassword }
   );
