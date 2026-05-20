@@ -11,7 +11,7 @@ function bufferToBase64(buf: ArrayBuffer): string {
 // Ensure we have an ArrayBuffer from a TypedArray
 function toArrayBuffer(buf: ArrayBuffer | Uint8Array): ArrayBuffer {
   if (buf instanceof Uint8Array) {
-    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
   }
   return buf;
 }
