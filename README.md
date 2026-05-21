@@ -8,9 +8,16 @@
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-47848F?logo=electron&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
+![better-sqlite3](https://img.shields.io/badge/better--sqlite3-003B57?logo=sqlite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white)
 ![Zustand](https://img.shields.io/badge/Zustand-443E38?logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?logo=jsonwebtokens&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-2E67D9?logo=zod&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![Argon2](https://img.shields.io/badge/Argon2-872B7E?logo=argo&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?logo=axios&logoColor=white)
+![Lucide](https://img.shields.io/badge/Lucide-F56565?logo=lucide&logoColor=white)
+![Helmet](https://img.shields.io/badge/Helmet-DC2626?logo=helmet&logoColor=white)
 
 ## Releases
 
