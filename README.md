@@ -2,6 +2,18 @@
 
 **Zero-knowledge, offline-first encrypted password manager** — built with a TypeScript + Express backend and an Electron + React desktop client, both using AES-256-GCM encryption with Argon2id key derivation.
 
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?logo=electron&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-443E38?logoColor=white)
+
+## Releases
+
 [![Releases](https://img.shields.io/badge/Releases-GitHub-blue?logo=github)](https://github.com/linuxbeste/Encryped_Password_Manager/releases)
 
 ## Architecture
