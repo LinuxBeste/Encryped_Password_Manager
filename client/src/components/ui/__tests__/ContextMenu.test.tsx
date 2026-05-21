@@ -69,11 +69,11 @@ describe('ContextMenu', () => {
   it('renders shortcut text when provided', () => {
     render(
       <ContextMenu
-        items={[{ id: 'copy', label: 'Copy', shortcut: '⌘C', onClick: vi.fn() }]}
+        items={[{ id: 'copy', label: 'Copy', shortcut: 'Ctrl+C', onClick: vi.fn() }]}
         position={{ x: 100, y: 100 }}
         onClose={vi.fn()}
       />
     );
-    expect(screen.getByText('⌘C')).toBeInTheDocument();
+    expect(screen.getByText('Ctrl+C')).toBeInTheDocument();
   });
 });

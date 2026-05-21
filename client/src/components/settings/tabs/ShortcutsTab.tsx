@@ -5,25 +5,25 @@ const shortcutGroups = [
   {
     label: 'General',
     shortcuts: [
-      { keys: '⌘K', description: 'Global search' },
-      { keys: '⌘N', description: 'New entry' },
-      { keys: '⌘L', description: 'Lock vault' },
+      { keys: 'Ctrl+K', description: 'Global search' },
+      { keys: 'Ctrl+N', description: 'New entry' },
+      { keys: 'Ctrl+L', description: 'Lock vault' },
     ],
   },
   {
     label: 'Navigation',
     shortcuts: [
-      { keys: '⌘F', description: 'Focus search in list' },
-      { keys: '⌘↑', description: 'Previous entry' },
-      { keys: '⌘↓', description: 'Next entry' },
+      { keys: 'Ctrl+F', description: 'Focus search in list' },
+      { keys: 'Ctrl+↑', description: 'Previous entry' },
+      { keys: 'Ctrl+↓', description: 'Next entry' },
     ],
   },
   {
     label: 'Entry Actions',
     shortcuts: [
-      { keys: '⌘C', description: 'Copy password of selected entry' },
-      { keys: '⌘B', description: 'Copy username of selected entry' },
-      { keys: '⌘⇧C', description: 'Copy TOTP code' },
+      { keys: 'Ctrl+C', description: 'Copy password of selected entry' },
+      { keys: 'Ctrl+B', description: 'Copy username of selected entry' },
+      { keys: 'Ctrl+⇧C', description: 'Copy TOTP code' },
     ],
   },
 ];

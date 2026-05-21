@@ -282,8 +282,8 @@ export default function App() {
           position={{ x: contextMenu.x, y: contextMenu.y }}
           onClose={() => setContextMenu(null)}
           items={[
-            { id: 'copy-password', label: 'Copy Password', icon: KeyRound, shortcut: '⌘C', onClick: handleCopyPassword },
-            { id: 'copy-username', label: 'Copy Username', shortcut: '⌘B', onClick: handleCopyUsername },
+            { id: 'copy-password', label: 'Copy Password', icon: KeyRound, shortcut: 'Ctrl+C', onClick: handleCopyPassword },
+            { id: 'copy-username', label: 'Copy Username', shortcut: 'Ctrl+B', onClick: handleCopyUsername },
             { id: 'sep1', separator: true, label: '', onClick: () => {} },
             { id: 'favorite', label: 'Toggle Favorite', onClick: () => favoriteEntry(contextMenu.entry.id) },
             { id: 'delete', label: 'Delete', danger: true, onClick: () => handleDeleteEntry(contextMenu.entry.id) },
